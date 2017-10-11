@@ -1,6 +1,9 @@
 love.math.setRandomSeed(math.floor(love.timer.getTime()))
 love.graphics.setDefaultFilter('nearest', 'nearest')
 
+local SCREENWIDTH
+local SCREENHEIGHT
+
 local blocks = {}
 
 local CONSTELLATION_3_6 = 'CONSTELLATION_3_6'
@@ -20,8 +23,8 @@ local constellationConstants = {
   CONSTELLATION_12_3,
 }
 
-local BLOCK_HEIGHT = 24
-local BLOCK_WIDTH = 4
+local PLAYAREA_HEIGHT_IN_BLOCKS = 24
+local PLAYAREA_WIDTH_IN_BLOCKS = 4
 
 local totalPoints
 local constellationPoints
@@ -30,6 +33,13 @@ local lastConstellationConstant = nil
 local score
 
 local isGameOver = false
+
+local blockImages = {}
+local backgroundImage
+
+local canvas
+local font
+local FONT_COLOR = {34, 32, 52}
 
 function newBlockConstellation()
   local constellationConstant = constellationConstants[love.math.random(table.getn(constellationConstants))]
@@ -113,18 +123,6 @@ function newBlockConstellation()
 
 end
 
-local function getColorToRgb(colorConstant)
-  if colorConstant == COLOR_1 then
-    return 0, 0, 255, 255
-  elseif colorConstant == COLOR_2 then
-    return 255, 0, 0, 255
-  elseif colorConstant == COLOR_3 then
-    return 0, 255, 0, 255
-  elseif colorConstant == COLOR_4 then
-    return 255, 0, 255, 255
-  end
-end
-
 local fallingConstellation = newBlockConstellation()
 
 local function resetGame()
@@ -139,7 +137,37 @@ local function resetGame()
 end
 
 function love.load()
+
+  -- hide mouse pointer
+  love.mouse.setVisible(false)
+
+  font = love.graphics.newImageFont('art/font.png',
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890.,:;!?()[]+-÷\\/•*\'" ')
+
+  backgroundImage = love.graphics.newImage('art/bg.png')
+
+  blockImages[COLOR_1] = love.graphics.newImage('art/block1.png')
+  blockImages[COLOR_2] = love.graphics.newImage('art/block2.png')
+  blockImages[COLOR_3] = love.graphics.newImage('art/block3.png')
+  blockImages[COLOR_4] = love.graphics.newImage('art/block4.png')
+
+  -- get desktop dimensions and graphics scale
+  do
+    local _, _, flags = love.window.getMode()
+    SCREENWIDTH, SCREENHEIGHT = love.window.getDesktopDimensions(flags.display)
+
+    -- NOTE: assume screen width is larger than screen height
+    GRAPHICSSCALE = SCREENHEIGHT / backgroundImage:getHeight()
+    CANVAS_X = (SCREENWIDTH - backgroundImage:getWidth() * GRAPHICSSCALE) / 2
+
+    love.window.setFullscreen(true)
+  end
+
   love.graphics.setBackgroundColor(40, 40, 40, 255)
+
+  love.graphics.setFont(font)
+
+  canvas = love.graphics.newCanvas()
 
   resetGame()
 end
@@ -169,7 +197,7 @@ function love.keypressed(key)
   -- find max y to put controllable constellation
   local isFallingConstellationColliding = function (y)
     for i,fallingBlock in ipairs(fallingConstellation) do
-      if fallingBlock.y + y == BLOCK_HEIGHT then
+      if fallingBlock.y + y == PLAYAREA_HEIGHT_IN_BLOCKS then
         return true
       end
       for j,block in ipairs(blocks) do
@@ -195,14 +223,14 @@ function love.keypressed(key)
   end
 
   -- remove full block lines
-  for y = 0, BLOCK_HEIGHT - 1 do
+  for y = 0, PLAYAREA_HEIGHT_IN_BLOCKS - 1 do
     local blockRowIndeces = {}
     for i, block in ipairs(blocks) do
       if block.y == y then
         table.insert(blockRowIndeces, i)
       end
     end
-    if table.getn(blockRowIndeces) == BLOCK_WIDTH then
+    if table.getn(blockRowIndeces) == PLAYAREA_WIDTH_IN_BLOCKS then
       table.sort(blockRowIndeces)
       for i = table.getn(blockRowIndeces), 1, -1 do
         table.remove(blocks, blockRowIndeces[i])
@@ -221,7 +249,7 @@ function love.keypressed(key)
   for i,block in ipairs(blocks) do
     if block.y < 0 then
       isGameOver = true
-      print('GAME OVER')
+      print('GAME OVER - score ' .. score)
       break
     end
   end
@@ -257,30 +285,33 @@ end
 
 function love.draw()
 
-  love.graphics.scale(3)
-
-  love.graphics.setColor(0, 0, 0, 255)
-
-  love.graphics.rectangle('fill', 0, 0, 8 * 4, 8 * BLOCK_HEIGHT)
-
-  love.graphics.rectangle('fill', 64, 8, 16, 16)
-
-  for i,fallingBlock in ipairs(fallingConstellation) do
-    love.graphics.setColor(getColorToRgb(fallingBlock.color))
-    love.graphics.rectangle('fill', 64 + fallingBlock.x * 8, 8 + fallingBlock.y * 8, 8, 8)
-  end  
-
-  for i,block in ipairs(blocks) do
-    love.graphics.setColor(getColorToRgb(block.color))
-    love.graphics.rectangle('fill', block.x * 8, block.y * 8, 8, 8)
-  end
+  love.graphics.setCanvas(canvas)
 
   love.graphics.setColor(255, 255, 255, 255)
 
-  love.graphics.print(totalPoints, 100, 100)
+  love.graphics.draw(backgroundImage, 0, 0)
 
-  love.graphics.setColor(255, 255, 0, 255)
+  for i,fallingBlock in ipairs(fallingConstellation) do
+    love.graphics.draw(blockImages[fallingBlock.color], 89 + fallingBlock.x * 8, 57 + fallingBlock.y * 8)
+  end  
 
-  love.graphics.print(score, 100, 120)
+  for i,block in ipairs(blocks) do
+    love.graphics.draw(blockImages[block.color], 121 + block.x * 8, 23 + block.y * 8)
+  end
+
+  -- love.graphics.print(totalPoints, 100, 100)
+
+  -- love.graphics.setColor(255, 255, 0, 255)
+
+  love.graphics.setColor(FONT_COLOR)
+
+  love.graphics.print(score, 82, 31)
+
+  love.graphics.setCanvas()
+
+  love.graphics.setColor(255, 255, 255, 255)
+
+  love.graphics.draw(canvas, CANVAS_X, 0, 0, GRAPHICSSCALE, GRAPHICSSCALE)
+
 end
 
