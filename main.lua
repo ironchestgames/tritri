@@ -1,12 +1,6 @@
 love.math.setRandomSeed(math.floor(love.timer.getTime()))
 love.graphics.setDefaultFilter('nearest', 'nearest')
 
-local deepcopy = require('lib/deepcopy')
-
-local function getData(packageName)
-  return table.deepcopy(require(packageName))
-end
-
 local blocks = {}
 
 local CONSTELLATION_3_6 = 'CONSTELLATION_3_6'
