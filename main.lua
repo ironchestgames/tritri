@@ -1,6 +1,8 @@
 love.math.setRandomSeed(math.floor(love.timer.getTime()))
 love.graphics.setDefaultFilter('nearest', 'nearest')
 
+local anim8 = require('anim8')
+
 local SCREENWIDTH
 local SCREENHEIGHT
 
@@ -40,6 +42,10 @@ local blockImages = {}
 local backgroundImage
 local arrowImages = {}
 local nextArrowImage
+local gameOverBlockImage
+local gameOverBlockAnimation
+local gameOverTextImage
+local gameOverTextAnimation
 local particleSystem
 
 local lastPressedArrow
@@ -48,6 +54,8 @@ local arrowFadeCount = 0
 local canvas
 local font
 local FONT_COLOR = {34, 32, 52}
+local gameOverBgFadeCount = 0
+local gameOverBgFadeDuration = 3
 
 function newBlockConstellation()
   local constellationConstant = constellationConstants[love.math.random(table.getn(constellationConstants))]
@@ -142,6 +150,8 @@ local function resetGame()
   score = 0
 
   isGameOver = false
+  gameOverBgFadeCount = gameOverBgFadeDuration
+
 end
 
 function love.load()
@@ -165,14 +175,22 @@ function love.load()
 
   nextArrowImage = love.graphics.newImage('art/nextarrow.png')
 
+  gameOverBlockImage = love.graphics.newImage('art/gameoverblockanim.png')
+  local g = anim8.newGrid(8, 8, gameOverBlockImage:getWidth(), gameOverBlockImage:getHeight())
+  gameOverBlockAnimation = anim8.newAnimation(g('1-3', 1), 0.05)
+
+  gameOverTextImage = love.graphics.newImage('art/gameovertext.png')
+  local g = anim8.newGrid(102, 60, gameOverTextImage:getWidth(), gameOverTextImage:getHeight())
+  gameOverTextAnimation = anim8.newAnimation(g('1-3', 1), 0.05)
+
   local particleImage = love.graphics.newImage('art/whitepixel.png')
   particleSystem = love.graphics.newParticleSystem(particleImage, 32)
   particleSystem:setParticleLifetime(0.2, 0.4)
   particleSystem:setEmissionRate(100)
   particleSystem:setSizeVariation(1)
-  particleSystem:setSpeed(-250, 250)
+  particleSystem:setSpeed(-350, 350)
   particleSystem:setColors(255, 255, 255, 255, 255, 255, 255, 150, 69, 40, 60, 0)
-  particleSystem:setLinearDamping(100)
+  particleSystem:setLinearDamping(10)
   particleSystem:setAreaSpread('normal', 7, 0)
 
   -- get desktop dimensions and graphics scale
@@ -284,9 +302,12 @@ function love.keypressed(key)
   for i,block in ipairs(blocks) do
     if block.y < 0 then
       isGameOver = true
-      print('GAME OVER - score ' .. score)
-      break
+      block.outOfBoundary = true
     end
+  end
+
+  if isGameOver then
+    print('GAME OVER - score ' .. score)
   end
 
   -- add the points for the falling constellation
@@ -323,54 +344,91 @@ function love.update(dt)
   -- update arrow fade
   arrowFadeCount = arrowFadeCount - dt
 
+  -- update game over bg fade
+  if isGameOver == true and gameOverBgFadeCount > 0 then
+    gameOverBgFadeCount = gameOverBgFadeCount - dt
+  end
+
   -- update particle systems
   particleSystem:update(dt)
+
+  -- update animations
+  gameOverBlockAnimation:update(dt)
+  gameOverTextAnimation:update(dt)
 end
 
 function love.draw()
 
   love.graphics.setCanvas(canvas)
 
-  love.graphics.setColor(255, 255, 255, 255)
+  if isGameOver == true then
 
-  love.graphics.draw(backgroundImage, 0, 0)
+    local color = 255 * (gameOverBgFadeCount / gameOverBgFadeDuration)
 
-  -- draw arrows
-  love.graphics.setColor(255, 255, 255, 255 * (arrowFadeCount / arrowFadeDuration))
-  if lastPressedArrow ~= nil and arrowFadeCount > 0 then
-    love.graphics.draw(arrowImages[lastPressedArrow], 120, 34)
+    love.graphics.setColor(color, color, color, 255)
 
-    love.graphics.draw(nextArrowImage, 105, 10)
+    love.graphics.draw(backgroundImage, 0, 0)
+
+    love.graphics.setColor(255, 255, 255, 255)
+
+    -- draw blocks in play area
+    for i,block in ipairs(blocks) do
+      love.graphics.draw(blockImages[block.color], 120 + block.x * 8, 45 + block.y * 8)
+    end
+
+    -- draw gameover blocks in play area
+    for i,block in ipairs(blocks) do
+      if block.outOfBoundary == true then
+        gameOverBlockAnimation:draw(gameOverBlockImage, 120 + block.x * 8, 45 + block.y * 8)
+      end
+    end
+
+    gameOverTextAnimation:draw(gameOverTextImage, 74, 77)
+
+  else
+
+    love.graphics.setColor(255, 255, 255, 255)
+
+    love.graphics.draw(backgroundImage, 0, 0)
+
+    -- draw arrows
+    love.graphics.setColor(255, 255, 255, 255 * (arrowFadeCount / arrowFadeDuration))
+    if lastPressedArrow ~= nil and arrowFadeCount > 0 then
+      love.graphics.draw(arrowImages[lastPressedArrow], 120, 34)
+
+      love.graphics.draw(nextArrowImage, 105, 10)
+    end
+
+    love.graphics.setColor(255, 255, 255, 255)
+
+    -- draw next block
+    for i,nextBlock in ipairs(nextConstellation) do
+      love.graphics.draw(blockImages[nextBlock.color], 83 + nextBlock.x * 8, 11 + nextBlock.y * 8)
+    end
+
+    -- draw falling block
+    for i,fallingBlock in ipairs(fallingConstellation) do
+      love.graphics.draw(blockImages[fallingBlock.color], 128 + fallingBlock.x * 8, 11 + fallingBlock.y * 8)
+    end  
+
+    -- draw blocks in play area
+    for i,block in ipairs(blocks) do
+      love.graphics.draw(blockImages[block.color], 120 + block.x * 8, 45 + block.y * 8)
+    end
+
+    -- love.graphics.print(totalPoints, 100, 100)
+
+    -- love.graphics.setColor(255, 255, 0, 255)
+
+    love.graphics.setColor(FONT_COLOR)
+
+    love.graphics.print(score, 76, 45)
+
+    -- draw particle systems
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.draw(particleSystem, 0, 0)
+
   end
-
-  love.graphics.setColor(255, 255, 255, 255)
-
-  -- draw next block
-  for i,nextBlock in ipairs(nextConstellation) do
-    love.graphics.draw(blockImages[nextBlock.color], 83 + nextBlock.x * 8, 11 + nextBlock.y * 8)
-  end
-
-  -- draw falling block
-  for i,fallingBlock in ipairs(fallingConstellation) do
-    love.graphics.draw(blockImages[fallingBlock.color], 128 + fallingBlock.x * 8, 11 + fallingBlock.y * 8)
-  end  
-
-  -- draw blocks in play area
-  for i,block in ipairs(blocks) do
-    love.graphics.draw(blockImages[block.color], 120 + block.x * 8, 45 + block.y * 8)
-  end
-
-  -- love.graphics.print(totalPoints, 100, 100)
-
-  -- love.graphics.setColor(255, 255, 0, 255)
-
-  love.graphics.setColor(FONT_COLOR)
-
-  love.graphics.print(score, 76, 45)
-
-  -- draw particle systems
-  love.graphics.setColor(255, 255, 255, 255)
-  love.graphics.draw(particleSystem, 0, 0)
 
   -- draw canvas
   love.graphics.setCanvas()
