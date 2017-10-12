@@ -40,6 +40,7 @@ local blockImages = {}
 local backgroundImage
 local arrowImages = {}
 local nextArrowImage
+local particleSystem
 
 local lastPressedArrow
 local arrowFadeDuration = 0.6
@@ -164,6 +165,16 @@ function love.load()
 
   nextArrowImage = love.graphics.newImage('art/nextarrow.png')
 
+  local particleImage = love.graphics.newImage('art/whitepixel.png')
+  particleSystem = love.graphics.newParticleSystem(particleImage, 32)
+  particleSystem:setParticleLifetime(0.2, 0.4)
+  particleSystem:setEmissionRate(100)
+  particleSystem:setSizeVariation(1)
+  particleSystem:setSpeed(-250, 250)
+  particleSystem:setColors(255, 255, 255, 255, 255, 255, 255, 150, 69, 40, 60, 0)
+  particleSystem:setLinearDamping(100)
+  particleSystem:setAreaSpread('normal', 7, 0)
+
   -- get desktop dimensions and graphics scale
   do
     local _, _, flags = love.window.getMode()
@@ -176,7 +187,7 @@ function love.load()
     love.window.setFullscreen(true)
   end
 
-  love.graphics.setBackgroundColor(40, 40, 40, 255)
+  love.graphics.setBackgroundColor(155, 173, 183, 255)
 
   love.graphics.setFont(font)
 
@@ -253,6 +264,13 @@ function love.keypressed(key)
         table.remove(blocks, blockRowIndeces[i])
       end
 
+      -- particle fx!
+      particleSystem:reset()
+      particleSystem:start()
+      particleSystem:setPosition(120 + 16, 45 + y * 8 + 8)
+      particleSystem:emit(120)
+      particleSystem:stop()
+
       -- move them down one row
       for i,block in ipairs(blocks) do
         if block.y < y then
@@ -304,6 +322,9 @@ function love.update(dt)
 
   -- update arrow fade
   arrowFadeCount = arrowFadeCount - dt
+
+  -- update particle systems
+  particleSystem:update(dt)
 end
 
 function love.draw()
@@ -347,6 +368,11 @@ function love.draw()
 
   love.graphics.print(score, 76, 45)
 
+  -- draw particle systems
+  love.graphics.setColor(255, 255, 255, 255)
+  love.graphics.draw(particleSystem, 0, 0)
+
+  -- draw canvas
   love.graphics.setCanvas()
 
   love.graphics.setColor(255, 255, 255, 255)
