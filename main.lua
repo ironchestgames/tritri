@@ -39,6 +39,7 @@ local isGameOver = false
 local blockImages = {}
 local backgroundImage
 local arrowImages = {}
+local nextArrowImage
 
 local lastPressedArrow
 local arrowFadeDuration = 0.6
@@ -160,6 +161,8 @@ function love.load()
   arrowImages['left'] = love.graphics.newImage('art/arrow_left.png')
   arrowImages['down'] = love.graphics.newImage('art/arrow_middle.png')
   arrowImages['right'] = love.graphics.newImage('art/arrow_right.png')
+
+  nextArrowImage = love.graphics.newImage('art/nextarrow.png')
 
   -- get desktop dimensions and graphics scale
   do
@@ -315,6 +318,8 @@ function love.draw()
   love.graphics.setColor(255, 255, 255, 255 * (arrowFadeCount / arrowFadeDuration))
   if lastPressedArrow ~= nil and arrowFadeCount > 0 then
     love.graphics.draw(arrowImages[lastPressedArrow], 120, 34)
+
+    love.graphics.draw(nextArrowImage, 105, 10)
   end
 
   love.graphics.setColor(255, 255, 255, 255)
