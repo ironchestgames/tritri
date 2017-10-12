@@ -38,7 +38,11 @@ local isGameOver = false
 
 local blockImages = {}
 local backgroundImage
+local arrowImages = {}
 
+local lastPressedArrow
+local arrowFadeDuration = 0.6
+local arrowFadeCount = 0
 local canvas
 local font
 local FONT_COLOR = {34, 32, 52}
@@ -153,6 +157,10 @@ function love.load()
   blockImages[COLOR_3] = love.graphics.newImage('art/block3.png')
   blockImages[COLOR_4] = love.graphics.newImage('art/block4.png')
 
+  arrowImages['left'] = love.graphics.newImage('art/arrow_left.png')
+  arrowImages['down'] = love.graphics.newImage('art/arrow_middle.png')
+  arrowImages['right'] = love.graphics.newImage('art/arrow_right.png')
+
   -- get desktop dimensions and graphics scale
   do
     local _, _, flags = love.window.getMode()
@@ -195,6 +203,10 @@ function love.keypressed(key)
   else
     return
   end
+
+  -- start arrow fade
+  lastPressedArrow = key
+  arrowFadeCount = arrowFadeDuration
 
   -- find max y to put controllable constellation
   local isFallingConstellationColliding = function (y)
@@ -286,6 +298,9 @@ function love.update(dt)
       constellationPoints = 0
     end
   end
+
+  -- update arrow fade
+  arrowFadeCount = arrowFadeCount - dt
 end
 
 function love.draw()
@@ -296,14 +311,25 @@ function love.draw()
 
   love.graphics.draw(backgroundImage, 0, 0)
 
+  -- draw arrows
+  love.graphics.setColor(255, 255, 255, 255 * (arrowFadeCount / arrowFadeDuration))
+  if lastPressedArrow ~= nil and arrowFadeCount > 0 then
+    love.graphics.draw(arrowImages[lastPressedArrow], 120, 34)
+  end
+
+  love.graphics.setColor(255, 255, 255, 255)
+
+  -- draw next block
   for i,nextBlock in ipairs(nextConstellation) do
     love.graphics.draw(blockImages[nextBlock.color], 83 + nextBlock.x * 8, 11 + nextBlock.y * 8)
   end
 
+  -- draw falling block
   for i,fallingBlock in ipairs(fallingConstellation) do
     love.graphics.draw(blockImages[fallingBlock.color], 128 + fallingBlock.x * 8, 11 + fallingBlock.y * 8)
   end  
 
+  -- draw blocks in play area
   for i,block in ipairs(blocks) do
     love.graphics.draw(blockImages[block.color], 120 + block.x * 8, 45 + block.y * 8)
   end
