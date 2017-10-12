@@ -292,11 +292,11 @@ function love.draw()
   love.graphics.draw(backgroundImage, 0, 0)
 
   for i,fallingBlock in ipairs(fallingConstellation) do
-    love.graphics.draw(blockImages[fallingBlock.color], 89 + fallingBlock.x * 8, 57 + fallingBlock.y * 8)
+    love.graphics.draw(blockImages[fallingBlock.color], 128 + fallingBlock.x * 8, 11 + fallingBlock.y * 8)
   end  
 
   for i,block in ipairs(blocks) do
-    love.graphics.draw(blockImages[block.color], 121 + block.x * 8, 23 + block.y * 8)
+    love.graphics.draw(blockImages[block.color], 120 + block.x * 8, 45 + block.y * 8)
   end
 
   -- love.graphics.print(totalPoints, 100, 100)
@@ -305,7 +305,7 @@ function love.draw()
 
   love.graphics.setColor(FONT_COLOR)
 
-  love.graphics.print(score, 82, 31)
+  love.graphics.print(score, 76, 45)
 
   love.graphics.setCanvas()
 
