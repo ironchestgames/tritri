@@ -31,6 +31,8 @@ local constellationPoints
 local startingPointsForConstellation = 100
 local lastConstellationConstant = nil
 local score
+local fallingConstellation
+local nextConstellation
 
 local isGameOver = false
 
@@ -123,11 +125,11 @@ function newBlockConstellation()
 
 end
 
-local fallingConstellation = newBlockConstellation()
-
 local function resetGame()
   blocks = {}
-  fallingConstellation = newBlockConstellation()
+
+  nextConstellation = newBlockConstellation()
+  fallingConstellation = newBlockConstellation() -- TODO: make this not the same as next
 
   totalPoints = 0
   constellationPoints = startingPointsForConstellation
@@ -261,13 +263,16 @@ function love.keypressed(key)
     score = score + 1
   end
 
-  -- get new controllable constellation
-  local fallingConstellationConstant
-  fallingConstellation, fallingConstellationConstant = newBlockConstellation()
-  while fallingConstellationConstant == lastConstellationConstant do
-    fallingConstellation, fallingConstellationConstant = newBlockConstellation()
+  -- next constellation to become falling
+  fallingConstellation = nextConstellation
+
+  -- get next constellation
+  local nextConstellationConstant
+  nextConstellation, nextConstellationConstant = newBlockConstellation()
+  while nextConstellationConstant == lastConstellationConstant do
+    nextConstellation, nextConstellationConstant = newBlockConstellation()
   end
-  lastConstellationConstant = fallingConstellationConstant
+  lastConstellationConstant = nextConstellationConstant
 end
 
 function love.keyreleased(key)
@@ -290,6 +295,10 @@ function love.draw()
   love.graphics.setColor(255, 255, 255, 255)
 
   love.graphics.draw(backgroundImage, 0, 0)
+
+  for i,nextBlock in ipairs(nextConstellation) do
+    love.graphics.draw(blockImages[nextBlock.color], 83 + nextBlock.x * 8, 11 + nextBlock.y * 8)
+  end
 
   for i,fallingBlock in ipairs(fallingConstellation) do
     love.graphics.draw(blockImages[fallingBlock.color], 128 + fallingBlock.x * 8, 11 + fallingBlock.y * 8)
