@@ -53,14 +53,14 @@ local gameOverTextAnimation
 local particleSystem
 
 local lastPressedArrow
-local arrowFadeDuration = 0.6
+local arrowFadeDuration = 0.55
 local arrowFadeCount = 0
 local canvas
 local font
 local FONT_COLOR = {34, 32, 52}
 local BG_COLOR = {155, 173, 183}
 local gameOverBgFadeCount = 0
-local gameOverBgFadeDuration = 3
+local gameOverBgFadeDuration = 0.3
 
 function newBlockConstellation()
   local constellationConstant = constellationConstants[love.math.random(table.getn(constellationConstants))]
