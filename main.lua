@@ -40,7 +40,8 @@ local nextConstellation
 local isGameOver = false
 
 local blockImages = {}
-local backgroundImage
+local backgroundImage -- NOTE: only a colored pixel
+local playAreaImage
 local arrowImages = {}
 local nextArrowImage
 local pointsArrowImage
@@ -56,6 +57,7 @@ local arrowFadeCount = 0
 local canvas
 local font
 local FONT_COLOR = {34, 32, 52}
+local BG_COLOR = {155, 173, 183}
 local gameOverBgFadeCount = 0
 local gameOverBgFadeDuration = 3
 
@@ -155,6 +157,8 @@ local function resetGame()
   isGameOver = false
   gameOverBgFadeCount = gameOverBgFadeDuration
 
+  love.graphics.setBackgroundColor(BG_COLOR)
+
 end
 
 function love.load()
@@ -166,6 +170,7 @@ function love.load()
     'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890.,:;!?()[]+-÷\\/•*\'" Ø')
 
   backgroundImage = love.graphics.newImage('art/bg.png')
+  playAreaImage = love.graphics.newImage('art/playarea.png')
 
   blockImages[COLOR_1] = love.graphics.newImage('art/block1.png')
   blockImages[COLOR_2] = love.graphics.newImage('art/block2.png')
@@ -203,13 +208,13 @@ function love.load()
     SCREENWIDTH, SCREENHEIGHT = love.window.getDesktopDimensions(flags.display)
 
     -- NOTE: assume screen width is larger than screen height
-    GRAPHICSSCALE = SCREENHEIGHT / backgroundImage:getHeight()
-    CANVAS_X = (SCREENWIDTH - backgroundImage:getWidth() * GRAPHICSSCALE) / 2
+    GRAPHICSSCALE = SCREENHEIGHT / playAreaImage:getHeight()
+    CANVAS_X = (SCREENWIDTH - playAreaImage:getWidth() * GRAPHICSSCALE) / 2
 
     love.window.setFullscreen(true)
   end
 
-  love.graphics.setBackgroundColor(155, 173, 183, 255)
+  love.graphics.setBackgroundColor(BG_COLOR)
 
   love.graphics.setFont(font)
 
@@ -365,15 +370,23 @@ end
 
 function love.draw()
 
-  love.graphics.setCanvas(canvas)
-
   if isGameOver == true then
 
     local color = 255 * (gameOverBgFadeCount / gameOverBgFadeDuration)
 
     love.graphics.setColor(color, color, color, 255)
 
-    love.graphics.draw(backgroundImage, 0, 0)
+    love.graphics.setBackgroundColor(
+        155 * (gameOverBgFadeCount / gameOverBgFadeDuration),
+        173 * (gameOverBgFadeCount / gameOverBgFadeDuration),
+        183 * (gameOverBgFadeCount / gameOverBgFadeDuration),
+        255)
+
+    love.graphics.setCanvas(canvas)
+
+    love.graphics.clear()
+
+    love.graphics.draw(playAreaImage, 0, 0)
 
     love.graphics.setColor(255, 255, 255, 255)
 
@@ -393,9 +406,13 @@ function love.draw()
 
   else
 
+    love.graphics.setCanvas(canvas)
+
+    love.graphics.clear()
+
     love.graphics.setColor(255, 255, 255, 255)
 
-    love.graphics.draw(backgroundImage, 0, 0)
+    love.graphics.draw(playAreaImage, 0, 0)
 
     -- draw arrows
     love.graphics.setColor(255, 255, 255, 255 * (arrowFadeCount / arrowFadeDuration))
