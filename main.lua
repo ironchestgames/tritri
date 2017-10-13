@@ -28,11 +28,12 @@ local constellationConstants = {
 local PLAYAREA_HEIGHT_IN_BLOCKS = 24
 local PLAYAREA_WIDTH_IN_BLOCKS = 4
 
-local totalPoints
+local accPoints
 local constellationPoints
+local averagePoints
 local startingPointsForConstellation = 100
 local lastConstellationConstant = nil
-local score
+local blockScore
 local fallingConstellation
 local nextConstellation
 
@@ -42,6 +43,7 @@ local blockImages = {}
 local backgroundImage
 local arrowImages = {}
 local nextArrowImage
+local pointsArrowImage
 local gameOverBlockImage
 local gameOverBlockAnimation
 local gameOverTextImage
@@ -145,9 +147,10 @@ local function resetGame()
   nextConstellation = newBlockConstellation()
   fallingConstellation = newBlockConstellation() -- TODO: make this not the same as next
 
-  totalPoints = 0
+  accPoints = 0
+  averagePoints = 0
   constellationPoints = startingPointsForConstellation
-  score = 0
+  blockScore = 0
 
   isGameOver = false
   gameOverBgFadeCount = gameOverBgFadeDuration
@@ -160,7 +163,7 @@ function love.load()
   love.mouse.setVisible(false)
 
   font = love.graphics.newImageFont('art/font.png',
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890.,:;!?()[]+-÷\\/•*\'" ')
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890.,:;!?()[]+-÷\\/•*\'" Ø')
 
   backgroundImage = love.graphics.newImage('art/bg.png')
 
@@ -174,6 +177,7 @@ function love.load()
   arrowImages['right'] = love.graphics.newImage('art/arrow_right.png')
 
   nextArrowImage = love.graphics.newImage('art/nextarrow.png')
+  pointsArrowImage = love.graphics.newImage('art/pointsarrow.png')
 
   gameOverBlockImage = love.graphics.newImage('art/gameoverblockanim.png')
   local g = anim8.newGrid(8, 8, gameOverBlockImage:getWidth(), gameOverBlockImage:getHeight())
@@ -307,14 +311,16 @@ function love.keypressed(key)
   end
 
   if isGameOver then
-    print('GAME OVER - score ' .. score)
+    print('GAME OVER - blocks: ' .. blockScore .. ', average: ' .. averagePoints .. ', total: ' .. accPoints)
   end
 
   -- add the points for the falling constellation
   if not isGameOver then
-    totalPoints = totalPoints + constellationPoints
+    accPoints = accPoints + constellationPoints
     constellationPoints = startingPointsForConstellation
-    score = score + 1
+    blockScore = blockScore + 1
+
+    averagePoints = math.ceil(accPoints / blockScore)
   end
 
   -- next constellation to become falling
@@ -383,7 +389,7 @@ function love.draw()
       end
     end
 
-    gameOverTextAnimation:draw(gameOverTextImage, 74, 77)
+    gameOverTextAnimation:draw(gameOverTextImage, 71, 107)
 
   else
 
@@ -397,6 +403,7 @@ function love.draw()
       love.graphics.draw(arrowImages[lastPressedArrow], 120, 34)
 
       love.graphics.draw(nextArrowImage, 105, 10)
+      love.graphics.draw(pointsArrowImage, 82, 77)
     end
 
     love.graphics.setColor(255, 255, 255, 255)
@@ -416,13 +423,13 @@ function love.draw()
       love.graphics.draw(blockImages[block.color], 120 + block.x * 8, 45 + block.y * 8)
     end
 
-    -- love.graphics.print(totalPoints, 100, 100)
-
-    -- love.graphics.setColor(255, 255, 0, 255)
-
     love.graphics.setColor(FONT_COLOR)
 
-    love.graphics.print(score, 76, 45)
+    love.graphics.print(blockScore, 37, 45)
+
+    love.graphics.print(averagePoints, 76, 45)
+    love.graphics.print(accPoints, 76, 67)
+    love.graphics.print(constellationPoints, 76, 90)
 
     -- draw particle systems
     love.graphics.setColor(255, 255, 255, 255)
