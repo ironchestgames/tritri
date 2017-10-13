@@ -224,11 +224,22 @@ function love.load()
   resetGame()
 end
 
-function love.keypressed(key)
+function love.keypressed(_key)
+
+  local key = _key
 
   if isGameOver then
     resetGame()
     return
+  end
+
+  -- left-hand support
+  if key == 'z' then
+    key = 'left'
+  elseif key == 'x' then
+    key = 'down'
+  elseif key == 'c' then
+    key = 'right'
   end
 
   -- consider input
