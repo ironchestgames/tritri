@@ -1,4 +1,4 @@
 
 local stateswitcher = require('stateswitcher')
 
-stateswitcher.switch('gameScene')
+stateswitcher.switch('splashScene')
