@@ -37,6 +37,7 @@ local lastConstellationConstant = nil
 local blockScore
 local fallingConstellation
 local nextConstellation
+local secondToNextConstellation
 
 local isGameOver = false
 
@@ -147,6 +148,7 @@ end
 local function resetGame()
   blocks = {}
 
+  secondToNextConstellation = newBlockConstellation()
   nextConstellation = newBlockConstellation()
   fallingConstellation = newBlockConstellation() -- TODO: make this not the same as next
 
@@ -340,14 +342,15 @@ function love.keypressed(_key)
     averagePoints = math.ceil(accPoints / blockScore)
   end
 
-  -- next constellation to become falling
+  -- move next train forward
   fallingConstellation = nextConstellation
+  nextConstellation = secondToNextConstellation
 
   -- get next constellation
   local nextConstellationConstant
-  nextConstellation, nextConstellationConstant = newBlockConstellation()
+  secondToNextConstellation, nextConstellationConstant = newBlockConstellation()
   while nextConstellationConstant == lastConstellationConstant do
-    nextConstellation, nextConstellationConstant = newBlockConstellation()
+    secondToNextConstellation, nextConstellationConstant = newBlockConstellation()
   end
   lastConstellationConstant = nextConstellationConstant
 end
@@ -431,11 +434,18 @@ function love.draw()
     if lastPressedArrow ~= nil and arrowFadeCount > 0 then
       love.graphics.draw(arrowImages[lastPressedArrow], 120, 34)
 
-      love.graphics.draw(nextArrowImage, 105, 10)
+      love.graphics.draw(nextArrowImage, 60, 10) -- NOTE: second to next
+      love.graphics.draw(nextArrowImage, 105, 10) -- NOTE: next
+
       love.graphics.draw(pointsArrowImage, 82, 77)
     end
 
     love.graphics.setColor(255, 255, 255, 255)
+
+    -- draw second to next block
+    for i,nextBlock in ipairs(secondToNextConstellation) do
+      love.graphics.draw(blockImages[nextBlock.color], 38 + nextBlock.x * 8, 11 + nextBlock.y * 8)
+    end
 
     -- draw next block
     for i,nextBlock in ipairs(nextConstellation) do
