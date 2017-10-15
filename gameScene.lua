@@ -51,8 +51,13 @@ local gameOverBlockImage
 local gameOverBlockAnimation
 local gameOverTextImage
 local gameOverTextAnimation
-local particleSystem
+local fallingConstellationParticleSystem
+local bgCanvas
+local bgParticleSystem
 
+local bgColor = {255, 0, -255, 100}
+local bgColorFactors = {-1, 1, 1}
+local bgColorCount = 0
 local lastPressedArrow
 local arrowFadeDuration = 0.55
 local arrowFadeCount = 0
@@ -62,6 +67,63 @@ local FONT_COLOR = {34, 32, 52}
 local BG_COLOR = {155, 173, 183}
 local gameOverBgFadeCount = 0
 local gameOverBgFadeDuration = 0.3
+
+function fadeColor(
+  time, prologue, attack, sustain, decay, epilogue,
+  fade_in_r, fade_in_g, fade_in_b,
+  fade_out_r, fade_out_g, fade_out_b
+)
+  -- [0, prologue)
+  if time < prologue then
+    return
+      fade_in_r,
+      fade_in_g,
+      fade_in_b,
+      255
+  end
+ 
+  -- (prologue, prologue + attack]
+  time = time - prologue
+  if time < attack then
+    return
+      fade_in_r,
+      fade_in_g,
+      fade_in_b,
+      ( math.cos( time / attack * math.pi ) + 1 ) / 2 * 255
+  end
+ 
+  -- (prologue + attack, prologue + attack + sustain]
+  time = time - attack
+  if time < sustain then
+    return
+      fade_in_r,
+      fade_in_g,
+      fade_in_b,
+      0
+  end
+ 
+  -- (prologue + attack + sustain, prologue + attack + sustain + decay]
+  time = time - sustain
+  if time < decay then
+    return
+      fade_out_r,
+      fade_out_g,
+      fade_out_b,
+      255 - ( ( math.cos( time / decay * math.pi ) + 1 ) / 2 * 255 )
+  end
+ 
+  -- (prologue + attack + sustain + decay, prologue + attack + sustain + decay + epilogue]
+  time = time - decay
+  if time < epilogue then
+    return
+      fade_out_r,
+      fade_out_g,
+      fade_out_b,
+      255
+  end
+ 
+  -- End of fading, return all nils.
+end
 
 function newBlockConstellation()
   local constellationConstant = constellationConstants[love.math.random(table.getn(constellationConstants))]
@@ -196,14 +258,14 @@ function love.load()
   gameOverTextAnimation = anim8.newAnimation(g('1-3', 1), 0.05)
 
   local particleImage = love.graphics.newImage('art/whitepixel.png')
-  particleSystem = love.graphics.newParticleSystem(particleImage, 32)
-  particleSystem:setParticleLifetime(0.2, 0.4)
-  particleSystem:setEmissionRate(100)
-  particleSystem:setSizeVariation(1)
-  particleSystem:setSpeed(-350, 350)
-  particleSystem:setColors(255, 255, 255, 255, 255, 255, 255, 150, 69, 40, 60, 0)
-  particleSystem:setLinearDamping(10)
-  particleSystem:setAreaSpread('normal', 7, 0)
+  fallingConstellationParticleSystem = love.graphics.newParticleSystem(particleImage, 32)
+  fallingConstellationParticleSystem:setParticleLifetime(0.2, 0.4)
+  fallingConstellationParticleSystem:setEmissionRate(100)
+  fallingConstellationParticleSystem:setSizeVariation(1)
+  fallingConstellationParticleSystem:setSpeed(-350, 350)
+  fallingConstellationParticleSystem:setColors(255, 255, 255, 255, 255, 255, 255, 150, 69, 40, 60, 0)
+  fallingConstellationParticleSystem:setLinearDamping(10)
+  fallingConstellationParticleSystem:setAreaSpread('normal', 7, 0)
 
   -- get desktop dimensions and graphics scale
   do
@@ -217,11 +279,23 @@ function love.load()
     love.window.setFullscreen(true)
   end
 
+  local bgParticleImage = love.graphics.newImage('art/bg_whitepixel.png')
+  bgParticleSystem = love.graphics.newParticleSystem(bgParticleImage, 200)
+  bgParticleSystem:setParticleLifetime(10, 20)
+  bgParticleSystem:setEmissionRate(10)
+  bgParticleSystem:setSizes(5, 25, 100, 150) --, 250, 350, 500)
+  bgParticleSystem:setSizeVariation(0)
+  bgParticleSystem:setSpin(-math.pi / 2, math.pi / 2)
+  bgParticleSystem:setAreaSpread('uniform', SCREENWIDTH / GRAPHICSSCALE, SCREENHEIGHT / GRAPHICSSCALE)
+  bgParticleSystem:start()
+
   love.graphics.setBackgroundColor(BG_COLOR)
 
   love.graphics.setFont(font)
 
   canvas = love.graphics.newCanvas()
+
+  bgCanvas = love.graphics.newCanvas()
 
   resetGame()
 end
@@ -306,11 +380,11 @@ function love.keypressed(_key)
       end
 
       -- particle fx!
-      particleSystem:reset()
-      particleSystem:start()
-      particleSystem:setPosition(120 + 16, 45 + y * 8 + 8)
-      particleSystem:emit(120)
-      particleSystem:stop()
+      fallingConstellationParticleSystem:reset()
+      fallingConstellationParticleSystem:start()
+      fallingConstellationParticleSystem:setPosition(120 + 16, 45 + y * 8 + 8)
+      fallingConstellationParticleSystem:emit(120)
+      fallingConstellationParticleSystem:stop()
 
       -- move them down one row
       for i,block in ipairs(blocks) do
@@ -376,11 +450,45 @@ function love.update(dt)
   end
 
   -- update particle systems
-  particleSystem:update(dt)
+  fallingConstellationParticleSystem:update(dt)
+
+  if isGameOver == false then
+    bgParticleSystem:update(dt)
+
+    bgColor[1] = bgColor[1] + dt * 0.1 * bgColorFactors[1]
+
+    if bgColor[1] > 255 then
+      bgColorFactors[1] = -1
+    elseif bgColor[1] < -255 then
+      bgColorFactors[1] = 1
+    end
+
+    bgColor[2] = bgColor[2] + dt * 0.096 * bgColorFactors[2]
+
+    if bgColor[2] > 255 then
+      bgColorFactors[2] = -1
+    elseif bgColor[2] < -255 then
+      bgColorFactors[2] = 1
+    end
+
+    bgColor[3] = bgColor[3] + dt * 0.111 * bgColorFactors[3]
+
+    if bgColor[3] > 255 then
+      bgColorFactors[3] = -1
+    elseif bgColor[3] < -255 then
+      bgColorFactors[3] = 1
+    end
+
+    bgParticleSystem:setColors(
+        255, 255, 255, 0,
+        bgColor[1], bgColor[2], bgColor[3], 255,
+        255, 255, 255, 0)
+  end
 
   -- update animations
   gameOverBlockAnimation:update(dt)
   gameOverTextAnimation:update(dt)
+
 end
 
 function love.draw()
@@ -472,15 +580,26 @@ function love.draw()
 
     -- draw particle systems
     love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.draw(particleSystem, 0, 0)
+    love.graphics.draw(fallingConstellationParticleSystem, 0, 0)
+
+
+    love.graphics.setCanvas(bgCanvas)
+    -- love.graphics.setBlendMode('screen')
+    love.graphics.draw(bgParticleSystem, playAreaImage:getWidth() / 2, playAreaImage:getHeight() / 2)
+    -- love.graphics.setBlendMode('alpha')
 
   end
 
-  -- draw canvas
+  -- draw canvases
   love.graphics.setCanvas()
 
+  -- draw background effect
   love.graphics.setColor(255, 255, 255, 255)
+  -- love.graphics.setColor(bgColor)
 
+  love.graphics.draw(bgCanvas, 0, 0, 0, GRAPHICSSCALE, GRAPHICSSCALE)
+
+  love.graphics.setColor(255, 255, 255, 255)
   love.graphics.draw(canvas, CANVAS_X, 0, 0, GRAPHICSSCALE, GRAPHICSSCALE)
 
 end
