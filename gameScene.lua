@@ -2,6 +2,7 @@ love.math.setRandomSeed(math.floor(love.timer.getTime()))
 love.graphics.setDefaultFilter('nearest', 'nearest')
 
 local stateswitcher = require('stateswitcher')
+local vars = require('vars')
 local anim8 = require('anim8')
 
 local SCREENWIDTH
@@ -55,18 +56,19 @@ local fallingConstellationParticleSystem
 local bgCanvas
 local bgParticleSystem
 
-local bgColor = {255, 0, -255, 100}
+local bgColor = {255, 0, -255, 255}
 local bgColorFactors = {-1, 1, 1}
 local bgColorCount = 0
 local lastPressedArrow
 local arrowFadeDuration = 0.55
 local arrowFadeCount = 0
-local canvas
+local gameCanvas
 local font
 local FONT_COLOR = {34, 32, 52}
 local BG_COLOR = {155, 173, 183}
 local gameOverBgFadeCount = 0
 local gameOverBgFadeDuration = 0.3
+local showBackgroundEffect = true
 
 function fadeColor(
   time, prologue, attack, sustain, decay, epilogue,
@@ -228,11 +230,13 @@ end
 
 function love.load()
 
+  -- set flags from options
+  showBackgroundEffect = passvar.showBackgroundEffect or true
+
   -- hide mouse pointer
   love.mouse.setVisible(false)
 
-  font = love.graphics.newImageFont('art/font.png',
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890.,:;!?()[]+-÷\\/•*\'" Ø')
+  font = love.graphics.newImageFont('art/font.png', vars.GLYPHS)
 
   backgroundImage = love.graphics.newImage('art/bg.png')
   playAreaImage = love.graphics.newImage('art/playarea.png')
@@ -293,9 +297,13 @@ function love.load()
 
   love.graphics.setFont(font)
 
-  canvas = love.graphics.newCanvas()
+  gameCanvas = love.graphics.newCanvas()
 
   bgCanvas = love.graphics.newCanvas()
+
+  for i=1, 30 do
+    bgParticleSystem:update(1)
+  end
 
   resetGame()
 end
@@ -505,7 +513,7 @@ function love.draw()
         183 * (gameOverBgFadeCount / gameOverBgFadeDuration),
         255)
 
-    love.graphics.setCanvas(canvas)
+    love.graphics.setCanvas(gameCanvas)
 
     love.graphics.clear()
 
@@ -529,7 +537,7 @@ function love.draw()
 
   else
 
-    love.graphics.setCanvas(canvas)
+    love.graphics.setCanvas(gameCanvas)
 
     love.graphics.clear()
 
@@ -582,11 +590,9 @@ function love.draw()
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.draw(fallingConstellationParticleSystem, 0, 0)
 
-
+    -- draw background effect
     love.graphics.setCanvas(bgCanvas)
-    -- love.graphics.setBlendMode('screen')
     love.graphics.draw(bgParticleSystem, playAreaImage:getWidth() / 2, playAreaImage:getHeight() / 2)
-    -- love.graphics.setBlendMode('alpha')
 
   end
 
@@ -594,13 +600,14 @@ function love.draw()
   love.graphics.setCanvas()
 
   -- draw background effect
-  love.graphics.setColor(255, 255, 255, 255)
-  -- love.graphics.setColor(bgColor)
+  if showBackgroundEffect == true then
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.draw(bgCanvas, 0, 0, 0, GRAPHICSSCALE, GRAPHICSSCALE)
+  end
 
-  love.graphics.draw(bgCanvas, 0, 0, 0, GRAPHICSSCALE, GRAPHICSSCALE)
-
+  -- draw game canvas
   love.graphics.setColor(255, 255, 255, 255)
-  love.graphics.draw(canvas, CANVAS_X, 0, 0, GRAPHICSSCALE, GRAPHICSSCALE)
+  love.graphics.draw(gameCanvas, CANVAS_X, 0, 0, GRAPHICSSCALE, GRAPHICSSCALE)
 
 end
 
