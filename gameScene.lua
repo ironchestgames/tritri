@@ -5,9 +5,6 @@ local stateswitcher = require('stateswitcher')
 local vars = require('vars')
 local anim8 = require('anim8')
 
-local SCREENWIDTH
-local SCREENHEIGHT
-
 local blocks = {}
 
 local CONSTELLATION_3_6 = 'CONSTELLATION_3_6'
@@ -271,26 +268,14 @@ function love.load()
   fallingConstellationParticleSystem:setLinearDamping(10)
   fallingConstellationParticleSystem:setAreaSpread('normal', 7, 0)
 
-  -- get desktop dimensions and graphics scale
-  do
-    local _, _, flags = love.window.getMode()
-    SCREENWIDTH, SCREENHEIGHT = love.window.getDesktopDimensions(flags.display)
-
-    -- NOTE: assume screen width is larger than screen height
-    GRAPHICSSCALE = SCREENHEIGHT / playAreaImage:getHeight()
-    CANVAS_X = (SCREENWIDTH - playAreaImage:getWidth() * GRAPHICSSCALE) / 2
-
-    love.window.setFullscreen(true)
-  end
-
   local bgParticleImage = love.graphics.newImage('art/bg_whitepixel.png')
   bgParticleSystem = love.graphics.newParticleSystem(bgParticleImage, 200)
   bgParticleSystem:setParticleLifetime(10, 20)
   bgParticleSystem:setEmissionRate(10)
-  bgParticleSystem:setSizes(5, 25, 100, 150) --, 250, 350, 500)
+  bgParticleSystem:setSizes(5, 25, 100, 150)
   bgParticleSystem:setSizeVariation(0)
   bgParticleSystem:setSpin(-math.pi / 2, math.pi / 2)
-  bgParticleSystem:setAreaSpread('uniform', SCREENWIDTH / GRAPHICSSCALE, SCREENHEIGHT / GRAPHICSSCALE)
+  bgParticleSystem:setAreaSpread('uniform', _G.SCREENWIDTH / _G.GRAPHICSSCALE, _G.SCREENHEIGHT / _G.GRAPHICSSCALE)
   bgParticleSystem:start()
 
   love.graphics.setBackgroundColor(BG_COLOR)
@@ -602,12 +587,12 @@ function love.draw()
   -- draw background effect
   if showBackgroundEffect == true then
     love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.draw(bgCanvas, 0, 0, 0, GRAPHICSSCALE, GRAPHICSSCALE)
+    love.graphics.draw(bgCanvas, 0, 0, 0, _G.GRAPHICSSCALE, _G.GRAPHICSSCALE)
   end
 
   -- draw game canvas
   love.graphics.setColor(255, 255, 255, 255)
-  love.graphics.draw(gameCanvas, CANVAS_X, 0, 0, GRAPHICSSCALE, GRAPHICSSCALE)
+  love.graphics.draw(gameCanvas, _G.CANVAS_X, 0, 0, _G.GRAPHICSSCALE, _G.GRAPHICSSCALE)
 
 end
 

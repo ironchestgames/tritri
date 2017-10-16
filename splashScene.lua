@@ -4,11 +4,6 @@ love.graphics.setDefaultFilter('nearest', 'nearest')
 local stateswitcher = require('stateswitcher')
 local vars = require('vars')
 
-local SCREENWIDTH
-local SCREENHEIGHT
-local GRAPHICSSCALE
-local CANVAS_X
-
 local bgImage
 local canvas
 local font
@@ -19,27 +14,12 @@ local textBlinkIsOn = true
 
 function love.load()
 
-  -- hide mouse pointer
-  love.mouse.setVisible(false)
-
   -- load images
   bgImage = love.graphics.newImage('art/splash_bg.png')
 
   -- load font
   font = love.graphics.newImageFont('art/font.png', vars.GLYPHS)
   love.graphics.setFont(font)
-
-  -- get desktop dimensions and graphics scale
-  do
-    local _, _, flags = love.window.getMode()
-    SCREENWIDTH, SCREENHEIGHT = love.window.getDesktopDimensions(flags.display)
-
-    -- NOTE: assume screen width is larger than screen height
-    GRAPHICSSCALE = SCREENHEIGHT / bgImage:getHeight()
-    CANVAS_X = (SCREENWIDTH - bgImage:getWidth() * GRAPHICSSCALE) / 2
-
-    love.window.setFullscreen(true)
-  end
 
   canvas = love.graphics.newCanvas()
 
@@ -79,5 +59,5 @@ function love.draw()
   love.graphics.setColor(255, 255, 255, 255)
   love.graphics.setCanvas()
 
-  love.graphics.draw(canvas, CANVAS_X, 0, 0, GRAPHICSSCALE, GRAPHICSSCALE)
+  love.graphics.draw(canvas, _G.CANVAS_X, 0, 0, _G.GRAPHICSSCALE, _G.GRAPHICSSCALE)
 end
