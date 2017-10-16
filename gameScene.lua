@@ -33,6 +33,7 @@ local averagePoints
 local startingPointsForConstellation = 100
 local lastConstellationConstant = nil
 local blockScore
+local rowScore
 local fallingConstellation
 local nextConstellation
 local secondToNextConstellation
@@ -217,6 +218,7 @@ local function resetGame()
   averagePoints = 0
   constellationPoints = startingPointsForConstellation
   blockScore = 0
+  rowScore = 0
 
   isGameOver = false
   gameOverBgFadeCount = gameOverBgFadeDuration
@@ -367,6 +369,9 @@ function love.keypressed(_key)
       end
     end
     if table.getn(blockRowIndeces) == PLAYAREA_WIDTH_IN_BLOCKS then
+
+      rowScore = rowScore + 1
+
       table.sort(blockRowIndeces)
       for i = table.getn(blockRowIndeces), 1, -1 do
         table.remove(blocks, blockRowIndeces[i])
@@ -397,7 +402,7 @@ function love.keypressed(_key)
   end
 
   if isGameOver then
-    print('GAME OVER - blocks: ' .. blockScore .. ', average: ' .. averagePoints .. ', total: ' .. accPoints)
+    print('GAME OVER - blocks: ' .. blockScore .. ', rows: ' .. rowScore .. ', average: ' .. averagePoints .. ', total: ' .. accPoints)
   end
 
   -- add the points for the falling constellation
@@ -565,7 +570,8 @@ function love.draw()
 
     love.graphics.setColor(FONT_COLOR)
 
-    love.graphics.print(blockScore, 37, 45)
+    love.graphics.print(blockScore, 31, 45)
+    love.graphics.print(rowScore, 31, 67)
 
     love.graphics.print(averagePoints, 76, 45)
     love.graphics.print(accPoints, 76, 67)
@@ -586,7 +592,7 @@ function love.draw()
 
   -- draw background effect
   if showBackgroundEffect == true then
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(255, 255, 255, 100)
     love.graphics.draw(bgCanvas, 0, 0, 0, _G.GRAPHICSSCALE, _G.GRAPHICSSCALE)
   end
 
