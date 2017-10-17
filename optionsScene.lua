@@ -69,7 +69,7 @@ function love.draw()
     local optionTextX = 26
     local optionTextY = 55
     local optionTextHeight = 42
-    local optionValueX = 175
+    local optionValueX = 195
 
     love.graphics.draw(
         selectionImage,
@@ -98,7 +98,7 @@ function love.draw()
     -- start game
     love.graphics.print(
         'START GAME',
-        optionTextX,
+        optionTextX + 64,
         optionTextY + optionTextHeight * 1,
         0, 1, 1)
   end
