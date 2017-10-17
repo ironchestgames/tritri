@@ -63,7 +63,6 @@ local arrowFadeDuration = 0.55
 local arrowFadeCount = 0
 local gameCanvas
 local font
-local FONT_COLOR = {34, 32, 52}
 local BG_COLOR = {155, 173, 183}
 local gameOverBgFadeCount = 0
 local gameOverBgFadeDuration = 0.3
@@ -606,8 +605,13 @@ function love.draw()
       love.graphics.draw(blockImages[block.color], 120 + block.x * 8, 45 + block.y * 8)
     end
 
+    -- draw labels
+    love.graphics.setColor(vars.TEXT_COLOR_LIGHT)
+    love.graphics.print('SCORE', 32, 37)
+    love.graphics.print('SPEED BONUS', 32, 59)
+
     -- draw total score
-    love.graphics.setColor(FONT_COLOR)
+    love.graphics.setColor(vars.TEXT_COLOR_DARK)
     love.graphics.printf(totalPoints, 31, 46, 74, 'right')
 
     -- draw speed bonus

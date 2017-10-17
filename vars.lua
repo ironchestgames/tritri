@@ -6,6 +6,7 @@ vars.GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890.,:;!?()[]+-÷\\/•*\'" Ø'
 
 -- colors
 vars.TEXT_COLOR_DARK = {34, 32, 52, 255}
+vars.TEXT_COLOR_LIGHT = {255, 255, 255, 255}
 
 -- options
 vars.OPTIONS_FILE_NAME = 'options.conf'
