@@ -89,13 +89,14 @@ function love.load()
   local animationDurations = {}
 
   for i, v in ipairs(logoBlockPositions) do
-    table.insert(animationDurations, 0.15 + 0.001 * i)
+    table.insert(animationDurations, 0.02 * i)
   end
 
   -- create logo animations
   for i, v in ipairs(logoBlockPositions) do
     local g = anim8.newGrid(8, 8, blockAnimationImage:getWidth(), blockAnimationImage:getHeight())
-    local animation = anim8.newAnimation(g('1-7', 1), animationDurations[i])
+    local animation = anim8.newAnimation(g('1-7', 1), 0.15)
+    animation:update(animationDurations[i])
     table.insert(animations, animation)
   end
 
