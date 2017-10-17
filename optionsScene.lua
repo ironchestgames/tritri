@@ -1,12 +1,16 @@
 
+local anim8 = require('anim8')
 local jupiter = require('jupiter')
 local stateswitcher = require('stateswitcher')
 local vars = require('vars')
 
 local bgImage
+local bgAnimationImage
 local selectionImage
 local canvas
 local font
+
+local backgroundAnimations = {}
 
 local selectionIndex = 2 -- NOTE: start at 'start game'
 local selectionMaxIndex = 3
@@ -14,8 +18,9 @@ local selectionMaxIndex = 3
 function love.load()
 
   -- load images
-  bgImage = love.graphics.newImage('art/bg.png')
+  bgImage = love.graphics.newImage('art/options_bg.png')
   selectionImage = love.graphics.newImage('art/options_selection.png')
+  bgAnimationImage = love.graphics.newImage('art/splash_bg_blockanim.png')
 
   -- load font
   font = love.graphics.newImageFont('art/font.png', vars.GLYPHS)
@@ -24,6 +29,25 @@ function love.load()
   canvas = love.graphics.newCanvas()
 
   love.graphics.setBackgroundColor(155, 173, 183)
+
+  -- create background effect
+  do
+    local widthInBlocks = (_G.SCREENWIDTH / _G.GRAPHICSSCALE) / 8 + 8
+    local heightInBlocks = (_G.SCREENHEIGHT / _G.GRAPHICSSCALE) / 8 + 8
+
+    for y = 0, heightInBlocks do
+      for x = 0, widthInBlocks do
+        local g = anim8.newGrid(8, 8, bgAnimationImage:getWidth(), bgAnimationImage:getHeight())
+        local animation = anim8.newAnimation(g('1-3', 1), 1)
+        animation:gotoFrame(love.math.random(1, 3))
+        table.insert(backgroundAnimations, {
+          animation = animation,
+          x = x * 8 - 3,
+          y = y * 8 - 3,
+        })
+      end
+    end
+  end
 
 end
 
@@ -65,11 +89,24 @@ end
 
 function love.draw()
 
+  -- draw background
   love.graphics.setColor(255, 255, 255, 255)
+
+  love.graphics.push()
+
+  love.graphics.scale(_G.GRAPHICSSCALE, _G.GRAPHICSSCALE)
+
+  for i, object in ipairs(backgroundAnimations) do
+    object.animation:draw(bgAnimationImage, object.x, object.y)
+  end
+
+  love.graphics.pop()
 
   love.graphics.setCanvas(canvas)
 
   love.graphics.clear()
+
+  love.graphics.draw(bgImage, 0, 0)
 
   -- options
   do
@@ -104,8 +141,8 @@ function love.draw()
 
     -- highscore
     love.graphics.print(
-        'HIGHSCORES',
-        optionTextX + 64,
+        'HIGHSCORE',
+        optionTextX + 67,
         optionTextY + optionTextHeight * 1,
         0, 1, 1)
 
