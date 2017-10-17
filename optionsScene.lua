@@ -11,6 +11,7 @@ local canvas
 local font
 
 local selectionIndex = 1 -- NOTE: start at 'start game'
+local selectionMaxIndex = 2
 
 function love.load()
 
@@ -32,11 +33,13 @@ function love.keyreleased(key)
 
   if key == 'space' or key == 'return' or key == 'z' or key == 'left' or key == 'right' then
 
-    if selectionIndex == 1 then
+    if selectionIndex == 0 then
+      _G.options.showBackgroundEffect = not _G.options.showBackgroundEffect
+    elseif selectionIndex == 1 then
       local optionFileSaveSuccess = jupiter.save(_G.options)
       stateswitcher.switch('gameScene')
-    elseif selectionIndex == 0 then
-      _G.options.showBackgroundEffect = not _G.options.showBackgroundEffect
+    elseif selectionIndex == 2 then
+      love.event.quit()
     end
 
   elseif key == 'up' then
@@ -46,8 +49,8 @@ function love.keyreleased(key)
   end
 
   if selectionIndex < 0 then
-    selectionIndex = 1
-  elseif selectionIndex > 1 then
+    selectionIndex = selectionMaxIndex
+  elseif selectionIndex > selectionMaxIndex then
     selectionIndex = 0
   end
 end
@@ -100,6 +103,13 @@ function love.draw()
         'START GAME',
         optionTextX + 64,
         optionTextY + optionTextHeight * 1,
+        0, 1, 1)
+
+    -- exit game
+    love.graphics.print(
+        'EXIT GAME',
+        optionTextX + 67,
+        optionTextY + optionTextHeight * 2,
         0, 1, 1)
   end
 
