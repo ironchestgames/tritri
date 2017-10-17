@@ -12,7 +12,7 @@ local savedScores
 function love.load()
 
   -- load images
-  bgImage = love.graphics.newImage('art/bg.png')
+  bgImage = love.graphics.newImage('art/highscore_layout.png')
 
   -- load font
   font = love.graphics.newImageFont('art/font.png', vars.GLYPHS)
@@ -49,13 +49,19 @@ function love.draw()
 
   love.graphics.clear()
 
+  love.graphics.draw(bgImage, 0, 0)
+
   love.graphics.setColor(vars.TEXT_COLOR_DARK)
 
-  for i, v in ipairs(savedScores) do
+  for i = 1, 10 do
+  	local v = 0
+  	if savedScores[i] then
+  		v = savedScores[i]
+  	end
   	love.graphics.printf(
         v,
-        36,
-        55 + 14 * (i - 1),
+        55,
+        60 + 13 * (i - 1),
         100,
         'right')
   end
