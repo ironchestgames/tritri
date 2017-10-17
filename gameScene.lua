@@ -230,7 +230,7 @@ end
 function love.load()
 
   -- set flags from options
-  showBackgroundEffect = passvar.showBackgroundEffect or true
+  showBackgroundEffect = _G.options.showBackgroundEffect
 
   -- hide mouse pointer
   love.mouse.setVisible(false)
@@ -298,6 +298,11 @@ end
 function love.keypressed(_key)
 
   local key = _key
+
+  if key == 'escape' or key == 'q' then
+    stateswitcher.switch('optionsScene')
+    return
+  end
 
   if isGameOver then
     resetGame()
@@ -592,7 +597,7 @@ function love.draw()
 
   -- draw background effect
   if showBackgroundEffect == true then
-    love.graphics.setColor(255, 255, 255, 100)
+    love.graphics.setColor(255, 255, 255, 200)
     love.graphics.draw(bgCanvas, 0, 0, 0, _G.GRAPHICSSCALE, _G.GRAPHICSSCALE)
   end
 

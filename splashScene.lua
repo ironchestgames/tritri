@@ -28,7 +28,7 @@ function love.load()
 end
 
 function love.keyreleased(key)
-  stateswitcher.switch('gameScene', {})
+  stateswitcher.switch('optionsScene')
 end
 
 function love.update(dt)

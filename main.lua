@@ -1,5 +1,7 @@
 
+local jupiter = require('jupiter')
 local stateswitcher = require('stateswitcher')
+local vars = require('vars')
 
 -- hide mouse pointer
 love.mouse.setVisible(false)
@@ -18,4 +20,30 @@ do
   love.window.setFullscreen(true)
 end
 
-stateswitcher.switch('splashScene', {})
+-- load options file
+do
+  _G.options = jupiter.load(vars.OPTIONS_FILE_NAME)
+
+  if _G.options == nil then
+    _G.options = {}
+  end
+
+  -- copy default values where no value was found
+  for k, v in pairs(vars.DEFAULT_OPTIONS) do
+    if _G.options[k] == nil then
+      _G.options[k] = v
+    end
+  end
+
+  -- fix all booleans
+  for k, v in pairs(_G.options) do
+    if v == 'true' then
+      _G.options[k] = true
+    elseif v == 'false' then
+      _G.options[k] = false
+    end
+  end
+
+end
+
+stateswitcher.switch('splashScene')
