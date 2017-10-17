@@ -5,10 +5,12 @@ local vars = require('vars')
 
 local bgImage
 local blockAnimationImage
+local bgAnimationImage
 local canvas
 local font
 
 local animations = {}
+local backgroundAnimations = {}
 
 local textBlinkDuration = 0.3
 local textBlinkCount = textBlinkDuration
@@ -77,6 +79,7 @@ function love.load()
   -- load images
   bgImage = love.graphics.newImage('art/splash_bg.png')
   blockAnimationImage = love.graphics.newImage('art/blockanim.png')
+  bgAnimationImage = love.graphics.newImage('art/splash_bg_blockanim.png')
 
   -- load font
   font = love.graphics.newImageFont('art/font.png', vars.GLYPHS)
@@ -98,6 +101,25 @@ function love.load()
     local animation = anim8.newAnimation(g('1-7', 1), 0.15)
     animation:update(animationDurations[i])
     table.insert(animations, animation)
+  end
+
+  -- create background effect
+  do
+    local widthInBlocks = (_G.SCREENWIDTH / _G.GRAPHICSSCALE) / 8 + 8
+    local heightInBlocks = (_G.SCREENHEIGHT / _G.GRAPHICSSCALE) / 8 + 8
+
+    for y = 0, heightInBlocks do
+      for x = 0, widthInBlocks do
+        local g = anim8.newGrid(8, 8, bgAnimationImage:getWidth(), bgAnimationImage:getHeight())
+        local animation = anim8.newAnimation(g('1-3', 1), 1)
+        animation:gotoFrame(love.math.random(1, 3))
+        table.insert(backgroundAnimations, {
+          animation = animation,
+          x = x * 8 - 3,
+          y = y * 8 - 3,
+        })
+      end
+    end
   end
 
 end
@@ -125,8 +147,20 @@ end
 
 function love.draw()
 
+  -- draw background
   love.graphics.setColor(255, 255, 255, 255)
 
+  love.graphics.push()
+
+  love.graphics.scale(_G.GRAPHICSSCALE, _G.GRAPHICSSCALE)
+
+  for i, object in ipairs(backgroundAnimations) do
+    object.animation:draw(bgAnimationImage, object.x, object.y)
+  end
+
+  love.graphics.pop()
+
+  -- draw on canvas
   love.graphics.setCanvas(canvas)
 
   love.graphics.clear()
