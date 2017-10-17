@@ -34,6 +34,7 @@ local startingPointsForConstellation = 100
 local lastConstellationConstant = nil
 local blockScore
 local rowScore
+local totalPoints -- NOTE: accPoints * (rowScore + blockScore)
 local fallingConstellation
 local nextConstellation
 local secondToNextConstellation
@@ -43,9 +44,9 @@ local isGameOver = false
 local blockImages = {}
 local backgroundImage -- NOTE: only a colored pixel
 local playAreaImage
+local speedBonusFillImage
 local arrowImages = {}
 local nextArrowImage
-local pointsArrowImage
 local gameOverBlockImage
 local gameOverBlockAnimation
 local gameOverTextImage
@@ -219,6 +220,7 @@ local function resetGame()
   constellationPoints = startingPointsForConstellation
   blockScore = 0
   rowScore = 0
+  totalPoints = 0
 
   isGameOver = false
   gameOverBgFadeCount = gameOverBgFadeDuration
@@ -238,7 +240,9 @@ function love.load()
   font = love.graphics.newImageFont('art/font.png', vars.GLYPHS)
 
   backgroundImage = love.graphics.newImage('art/bg.png')
-  playAreaImage = love.graphics.newImage('art/playarea.png')
+  playAreaImage = love.graphics.newImage('art/playarea_clean.png')
+
+  speedBonusFillImage = love.graphics.newImage('art/lightbluepixel.png')
 
   blockImages[COLOR_1] = love.graphics.newImage('art/block1.png')
   blockImages[COLOR_2] = love.graphics.newImage('art/block2.png')
@@ -250,7 +254,6 @@ function love.load()
   arrowImages['right'] = love.graphics.newImage('art/arrow_right.png')
 
   nextArrowImage = love.graphics.newImage('art/nextarrow.png')
-  pointsArrowImage = love.graphics.newImage('art/pointsarrow.png')
 
   gameOverBlockImage = love.graphics.newImage('art/gameoverblockanim.png')
   local g = anim8.newGrid(8, 8, gameOverBlockImage:getWidth(), gameOverBlockImage:getHeight())
@@ -417,6 +420,8 @@ function love.keypressed(_key)
     blockScore = blockScore + 1
 
     averagePoints = math.ceil(accPoints / blockScore)
+
+    totalPoints = (blockScore + rowScore) * accPoints
   end
 
   -- move next train forward
@@ -547,8 +552,6 @@ function love.draw()
 
       love.graphics.draw(nextArrowImage, 60, 10) -- NOTE: second to next
       love.graphics.draw(nextArrowImage, 105, 10) -- NOTE: next
-
-      love.graphics.draw(pointsArrowImage, 82, 77)
     end
 
     love.graphics.setColor(255, 255, 255, 255)
@@ -573,14 +576,18 @@ function love.draw()
       love.graphics.draw(blockImages[block.color], 120 + block.x * 8, 45 + block.y * 8)
     end
 
+    -- draw total score
     love.graphics.setColor(FONT_COLOR)
+    love.graphics.printf(totalPoints, 31, 46, 74, 'right')
 
-    love.graphics.print(blockScore, 31, 45)
-    love.graphics.print(rowScore, 31, 67)
+    -- draw speed bonus
+    do
+      local w = 77 * (constellationPoints / startingPointsForConstellation)
+      local x = 30 + (77 - w)
 
-    love.graphics.print(averagePoints, 76, 45)
-    love.graphics.print(accPoints, 76, 67)
-    love.graphics.print(constellationPoints, 76, 90)
+      love.graphics.setColor(255, 255, 255, 255)
+      love.graphics.draw(speedBonusFillImage, x, 67, 0, w, 11)
+    end
 
     -- draw particle systems
     love.graphics.setColor(255, 255, 255, 255)

@@ -10,7 +10,7 @@ local selectionImage
 local canvas
 local font
 
-local selectionIndex = 0
+local selectionIndex = 1 -- NOTE: start at 'start game'
 
 function love.load()
 
