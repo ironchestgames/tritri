@@ -1,8 +1,9 @@
 love.math.setRandomSeed(math.floor(love.timer.getTime()))
 
+local anim8 = require('anim8')
+local jupiter = require('jupiter')
 local stateswitcher = require('stateswitcher')
 local vars = require('vars')
-local anim8 = require('anim8')
 
 local blocks = {}
 
@@ -409,7 +410,37 @@ function love.keypressed(_key)
   end
 
   if isGameOver then
-    print('GAME OVER - blocks: ' .. blockScore .. ', rows: ' .. rowScore .. ', average: ' .. averagePoints .. ', total: ' .. accPoints)
+
+    -- save scores
+    local savedScores = jupiter.load(vars.HIGHSCORE_FILE_NAME)
+
+    table.insert(savedScores, totalPoints)
+
+    table.sort(savedScores, function (a, b) return a > b end)
+
+    for i = 1, 10 do
+      if savedScores[i] ~= nil then
+        if savedScores[i] == totalPoints then
+          -- TODO: flash you got highscore
+        end
+      end
+    end
+
+    jupiter.save({
+      _fileName = vars.HIGHSCORE_FILE_NAME,
+      unpack({
+        savedScores[1],
+        savedScores[2],
+        savedScores[3],
+        savedScores[4],
+        savedScores[5],
+        savedScores[6],
+        savedScores[7],
+        savedScores[8],
+        savedScores[9],
+        savedScores[10],
+        })
+    })
   end
 
   -- add the points for the falling constellation

@@ -8,8 +8,8 @@ local selectionImage
 local canvas
 local font
 
-local selectionIndex = 1 -- NOTE: start at 'start game'
-local selectionMaxIndex = 2
+local selectionIndex = 2 -- NOTE: start at 'start game'
+local selectionMaxIndex = 3
 
 function love.load()
 
@@ -35,8 +35,11 @@ function love.keyreleased(key)
       _G.options.showBackgroundEffect = not _G.options.showBackgroundEffect
     elseif selectionIndex == 1 then
       local optionFileSaveSuccess = jupiter.save(_G.options)
-      stateswitcher.switch('gameScene')
+      stateswitcher.switch('highscoreScene')
     elseif selectionIndex == 2 then
+      local optionFileSaveSuccess = jupiter.save(_G.options)
+      stateswitcher.switch('gameScene')
+    elseif selectionIndex == 3 then
       love.event.quit()
     end
 
@@ -72,7 +75,7 @@ function love.draw()
   do
     local optionTextX = 26
     local optionTextY = 55
-    local optionTextHeight = 42
+    local optionTextHeight = 35
     local optionValueX = 195
 
     love.graphics.draw(
@@ -99,18 +102,25 @@ function love.draw()
         optionTextY + optionTextHeight * 0,
         0, 1, 1)
 
+    -- highscore
+    love.graphics.print(
+        'HIGHSCORES',
+        optionTextX + 64,
+        optionTextY + optionTextHeight * 1,
+        0, 1, 1)
+
     -- start game
     love.graphics.print(
         'START GAME',
         optionTextX + 64,
-        optionTextY + optionTextHeight * 1,
+        optionTextY + optionTextHeight * 2,
         0, 1, 1)
 
     -- exit game
     love.graphics.print(
         'EXIT GAME',
         optionTextX + 67,
-        optionTextY + optionTextHeight * 2,
+        optionTextY + optionTextHeight * 3,
         0, 1, 1)
   end
 

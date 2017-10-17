@@ -14,4 +14,7 @@ vars.DEFAULT_OPTIONS = {
   showBackgroundEffect = false,
 }
 
+-- highscore file
+vars.HIGHSCORE_FILE_NAME = 'highscores.file'
+
 return vars

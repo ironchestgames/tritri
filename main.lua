@@ -47,4 +47,18 @@ do
 
 end
 
+-- make sure there is a highscore file
+do
+  local savedScores = jupiter.load(vars.HIGHSCORE_FILE_NAME)
+
+  if savedScores == nil then
+    savedScores = {}
+  end
+
+  jupiter.save({
+    _fileName = vars.HIGHSCORE_FILE_NAME,
+    unpack(savedScores),
+  })
+end
+
 stateswitcher.switch('splashScene')
