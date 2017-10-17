@@ -1,6 +1,4 @@
 
-love.graphics.setDefaultFilter('nearest', 'nearest')
-
 local jupiter = require('jupiter')
 local stateswitcher = require('stateswitcher')
 local vars = require('vars')
@@ -53,6 +51,9 @@ function love.keyreleased(key)
   elseif selectionIndex > selectionMaxIndex then
     selectionIndex = 0
   end
+end
+
+function love.keypressed()
 end
 
 function love.update(dt)

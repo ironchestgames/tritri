@@ -1,6 +1,4 @@
 
-love.graphics.setDefaultFilter('nearest', 'nearest')
-
 local stateswitcher = require('stateswitcher')
 local vars = require('vars')
 

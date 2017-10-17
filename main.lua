@@ -1,7 +1,8 @@
-
 local jupiter = require('jupiter')
 local stateswitcher = require('stateswitcher')
 local vars = require('vars')
+
+love.graphics.setDefaultFilter('nearest', 'nearest')
 
 -- hide mouse pointer
 love.mouse.setVisible(false)
