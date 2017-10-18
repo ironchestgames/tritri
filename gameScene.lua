@@ -38,7 +38,7 @@ local totalPoints -- NOTE: accPoints * (rowScore + blockScore)
 local fallingConstellation
 local nextConstellation
 local secondToNextConstellation
-
+local isHighscore = false
 local isGameOver = false
 
 local blockImages = {}
@@ -50,6 +50,8 @@ local arrowImages = {}
 local nextArrowImage
 local gameOverBlockImage
 local gameOverBlockAnimation
+local highscoreTextImage
+local highscoreTextAnimation
 local gameOverTextImage
 local gameOverTextAnimation
 local fallingConstellationParticleSystem
@@ -224,6 +226,7 @@ local function resetGame()
   totalPoints = 0
 
   isGameOver = false
+  isHighscore = false
   gameOverBgFadeCount = gameOverBgFadeDuration
 
   love.graphics.setBackgroundColor(BG_COLOR)
@@ -265,6 +268,10 @@ function love.load()
   gameOverBlockImage = love.graphics.newImage('art/gameoverblockanim.png')
   local g = anim8.newGrid(8, 8, gameOverBlockImage:getWidth(), gameOverBlockImage:getHeight())
   gameOverBlockAnimation = anim8.newAnimation(g('1-3', 1), 0.05)
+
+  highscoreTextImage = love.graphics.newImage('art/highscore_text.png')
+  local g = anim8.newGrid(186, 26, highscoreTextImage:getWidth(), highscoreTextImage:getHeight())
+  highscoreTextAnimation = anim8.newAnimation(g('1-3', 1), 0.05)
 
   gameOverTextImage = love.graphics.newImage('art/gameovertext.png')
   local g = anim8.newGrid(102, 60, gameOverTextImage:getWidth(), gameOverTextImage:getHeight())
@@ -447,7 +454,7 @@ function love.keypressed(_key)
     for i = 1, 10 do
       if savedScores[i] ~= nil then
         if savedScores[i] == totalPoints then
-          -- TODO: flash you got highscore
+          isHighscore = true
         end
       end
     end
@@ -552,6 +559,7 @@ function love.update(dt)
   -- update animations
   gameOverBlockAnimation:update(dt)
   gameOverTextAnimation:update(dt)
+  highscoreTextAnimation:update(dt)
 
 end
 
@@ -612,7 +620,23 @@ function love.draw()
       end
     end
 
-    gameOverTextAnimation:draw(gameOverTextImage, 71, 107)
+    if isHighscore == true then
+      highscoreTextAnimation:draw(highscoreTextImage, 21, 159)
+    else
+      gameOverTextAnimation:draw(gameOverTextImage, 71, 107)
+    end
+
+    -- draw score
+    love.graphics.setColor(vars['TEXT_COLOR_SCORE_' .. tostring(highscoreTextAnimation.position)])
+
+    if isHighscore == true then
+      love.graphics.push()
+      love.graphics.scale(2, 2)
+      love.graphics.printf(totalPoints, 15, 20, 37, 'right')
+      love.graphics.pop()
+    else
+      love.graphics.printf(totalPoints, 31, 46, 74, 'right')
+    end
 
   else
 
