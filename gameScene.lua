@@ -43,6 +43,7 @@ local isGameOver = false
 
 local blockImages = {}
 local backgroundImage -- NOTE: only a colored pixel
+local bgAnimationImage
 local playAreaImage
 local speedBonusFillImage
 local arrowImages = {}
@@ -67,6 +68,7 @@ local BG_COLOR = {155, 173, 183}
 local gameOverBgFadeCount = 0
 local gameOverBgFadeDuration = 0.3
 local showBackgroundEffect = true
+local backgroundAnimations = {}
 
 function fadeColor(
   time, prologue, attack, sustain, decay, epilogue,
@@ -239,7 +241,13 @@ function love.load()
   font = love.graphics.newImageFont('art/font.png', vars.GLYPHS)
 
   backgroundImage = love.graphics.newImage('art/bg.png')
-  playAreaImage = love.graphics.newImage('art/playarea_clean.png')
+  bgAnimationImage = love.graphics.newImage('art/splash_bg_blockanim.png')
+
+  if showBackgroundEffect == true then
+    playAreaImage = love.graphics.newImage('art/playarea_clean_trippy.png')
+  else
+    playAreaImage = love.graphics.newImage('art/playarea_clean.png')
+  end
 
   speedBonusFillImage = love.graphics.newImage('art/lightbluepixel.png')
 
@@ -285,6 +293,25 @@ function love.load()
   love.graphics.setBackgroundColor(BG_COLOR)
 
   love.graphics.setFont(font)
+
+  -- create background effect
+  do
+    local widthInBlocks = (_G.SCREENWIDTH / _G.GRAPHICSSCALE) / 8 + 8
+    local heightInBlocks = (_G.SCREENHEIGHT / _G.GRAPHICSSCALE) / 8 + 8
+
+    for y = 0, heightInBlocks do
+      for x = 0, widthInBlocks do
+        local g = anim8.newGrid(8, 8, bgAnimationImage:getWidth(), bgAnimationImage:getHeight())
+        local animation = anim8.newAnimation(g('1-3', 1), 1)
+        animation:gotoFrame(love.math.random(1, 3))
+        table.insert(backgroundAnimations, {
+          animation = animation,
+          x = x * 8 - 3,
+          y = y * 8 - 3,
+        })
+      end
+    end
+  end
 
   gameCanvas = love.graphics.newCanvas()
 
@@ -530,6 +557,29 @@ end
 
 function love.draw()
 
+  -- draw background
+  love.graphics.setColor(255, 255, 255, 255)
+
+  if isGameOver == true then
+
+    local color = 255 * (gameOverBgFadeCount / gameOverBgFadeDuration)
+
+    love.graphics.setColor(color, color, color, 255)
+  end
+
+  if showBackgroundEffect == false then
+    love.graphics.push()
+
+    love.graphics.scale(_G.GRAPHICSSCALE, _G.GRAPHICSSCALE)
+
+    for i, object in ipairs(backgroundAnimations) do
+      object.animation:draw(bgAnimationImage, object.x, object.y)
+    end
+
+    love.graphics.pop()
+  end
+
+  -- draw game
   if isGameOver == true then
 
     local color = 255 * (gameOverBgFadeCount / gameOverBgFadeDuration)
