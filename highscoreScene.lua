@@ -98,7 +98,7 @@ function love.draw()
     end
     love.graphics.printf(
         v,
-        55,
+        38,
         60 + 13 * (i - 1),
         100,
         'right')
