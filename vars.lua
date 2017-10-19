@@ -2,11 +2,12 @@
 local vars = {}
 
 -- fonts
-vars.GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890.,:;!?()[]+-÷\\/•*\'" Ø'
+vars.GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890.,:;!?()[]+-÷\\/•*\'" ØÅÄÖ'
 
 -- colors
 vars.TEXT_COLOR_DARK = {34, 32, 52, 255}
 vars.TEXT_COLOR_LIGHT = {255, 255, 255, 255}
+vars.TEXT_COLOR_FADED = {155, 173, 183, 255}
 vars.TEXT_COLOR_SCORE_1 = {251, 242, 54, 255}
 vars.TEXT_COLOR_SCORE_2 = {255, 255, 255, 255}
 vars.TEXT_COLOR_SCORE_3 = {223, 113, 38, 255}

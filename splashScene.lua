@@ -171,6 +171,14 @@ function love.draw()
     animations[i]:draw(blockAnimationImage, blockPosition[1], blockPosition[2])
   end
 
+  -- byline
+  love.graphics.setColor(vars.TEXT_COLOR_FADED)
+  love.graphics.print('BY: FREDRIK JÄRNBRÖST', 63, 72, 0)
+
+  -- version
+  love.graphics.setColor(vars.TEXT_COLOR_FADED)
+  love.graphics.print('V.1', 19, 141, 0)
+
   if textBlinkIsOn then
     love.graphics.setColor(vars.TEXT_COLOR_DARK)
     love.graphics.print('PRESS ANY KEY', 51, 103, 0, 2, 2)
