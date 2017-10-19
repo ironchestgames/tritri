@@ -640,7 +640,7 @@ function love.update(dt)
   if isGameOver == false then
     bgParticleSystem:update(dt)
 
-    bgColor[1] = bgColor[1] + dt * 0.1 * bgColorFactors[1]
+    bgColor[1] = bgColor[1] + dt * 0.5 * bgColorFactors[1]
 
     if bgColor[1] > 255 then
       bgColorFactors[1] = -1
@@ -648,7 +648,7 @@ function love.update(dt)
       bgColorFactors[1] = 1
     end
 
-    bgColor[2] = bgColor[2] + dt * 0.096 * bgColorFactors[2]
+    bgColor[2] = bgColor[2] + dt * 0.496 * bgColorFactors[2]
 
     if bgColor[2] > 255 then
       bgColorFactors[2] = -1
@@ -656,7 +656,7 @@ function love.update(dt)
       bgColorFactors[2] = 1
     end
 
-    bgColor[3] = bgColor[3] + dt * 0.111 * bgColorFactors[3]
+    bgColor[3] = bgColor[3] + dt * 0.511 * bgColorFactors[3]
 
     if bgColor[3] > 255 then
       bgColorFactors[3] = -1
