@@ -291,6 +291,18 @@ function love.load()
   youMadeHighscoreSound = love.audio.newSource('assetsources/youmadehighscore.wav', 'static')
   gameOverSound = love.audio.newSource('assetsources/gameover.wav', 'static')
 
+  -- tweak sound volumes
+  for k, sound in pairs(fallSounds) do
+    sound:setVolume(0.8)
+  end
+
+  for k, sound in pairs(rowSounds) do
+    sound:setVolume(0.5)
+  end
+
+  gameOverSound:setVolume(0.8)
+  youMadeHighscoreSound:setVolume(0.8)
+
   -- initiate music randomness
   do
     function swap(array, index1, index2)
