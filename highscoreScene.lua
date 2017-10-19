@@ -4,6 +4,8 @@ local jupiter = require('jupiter')
 local stateswitcher = require('stateswitcher')
 local vars = require('vars')
 
+local music
+
 local bgImage
 local blockAnimationImage
 local canvas
@@ -15,6 +17,14 @@ local backgroundPositions = {}
 local backgroundAnimations = {}
 
 function love.load()
+
+  _G.menuMusic:stop()
+
+  -- load music
+  music = love.audio.newSource('assetsources/music_highscore.wav')
+  music:rewind()
+  music:setLooping(true)
+  music:play()
 
   -- load images
   bgImage = love.graphics.newImage('art/highscore_layout.png')
@@ -60,6 +70,14 @@ function love.keypressed()
 end
 
 function love.keyreleased(key)
+
+  -- stop highscore music
+  music:stop()
+
+  -- start menu music
+  _G.menuMusic:rewind()
+  _G.menuMusic:play()
+
   stateswitcher.switch('optionsScene')
 end
 

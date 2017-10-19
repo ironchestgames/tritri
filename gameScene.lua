@@ -249,6 +249,9 @@ function love.load()
   -- set flags from options
   showBackgroundEffect = _G.options.showBackgroundEffect
 
+  -- stop menu music
+  _G.menuMusic:stop()
+
   -- hide mouse pointer
   love.mouse.setVisible(false)
 
@@ -404,6 +407,10 @@ function love.keypressed(_key)
     for i, source in ipairs(musicSources) do
       source:stop()
     end
+
+    -- start menu music
+    _G.menuMusic:rewind()
+    _G.menuMusic:play()
 
     stateswitcher.switch('optionsScene')
     return

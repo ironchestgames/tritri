@@ -61,4 +61,8 @@ do
   })
 end
 
+_G.menuMusic = love.audio.newSource('assetsources/music_menu.wav')
+_G.menuMusic:setLooping(true)
+_G.menuMusic:play()
+
 stateswitcher.switch('splashScene')
