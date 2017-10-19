@@ -516,7 +516,7 @@ function love.keypressed(_key)
       -- particle fx!
       fallingConstellationParticleSystem:reset()
       fallingConstellationParticleSystem:start()
-      fallingConstellationParticleSystem:setPosition(120 + 16, 45 + y * 8 + 8)
+      fallingConstellationParticleSystem:setPosition(149 + 16, 45 + y * 8 + 8)
       fallingConstellationParticleSystem:emit(120)
       fallingConstellationParticleSystem:stop()
 
@@ -768,19 +768,18 @@ function love.draw()
 
     -- draw blocks in play area
     for i,block in ipairs(blocks) do
-      love.graphics.draw(blockImages[block.color], 120 + block.x * 8, 45 + block.y * 8)
+      love.graphics.draw(blockImages[block.color], 149 + block.x * 8, 45 + block.y * 8)
     end
 
     -- draw gameover blocks in play area
     for i,block in ipairs(blocks) do
       if block.outOfBoundary == true then
-        gameOverBlockAnimation:draw(gameOverBlockImage, 120 + block.x * 8, 45 + block.y * 8)
+        gameOverBlockAnimation:draw(gameOverBlockImage, 149 + block.x * 8, 45 + block.y * 8)
       end
     end
 
     if isHighscore == true then
       highscoreTextAnimation:draw(highscoreTextImage, 21, 159)
-
     else
       gameOverTextAnimation:draw(gameOverTextImage, 71, 107)
     end
@@ -791,10 +790,10 @@ function love.draw()
     if isHighscore == true then
       love.graphics.push()
       love.graphics.scale(2, 2)
-      love.graphics.printf(totalPoints, 15, 20, 37, 'right')
+      love.graphics.printf(totalPoints, 44, 20, 37, 'right')
       love.graphics.pop()
     else
-      love.graphics.printf(totalPoints, 31, 46, 74, 'right')
+      love.graphics.printf(totalPoints, 60, 46, 74, 'right')
     end
 
   else
@@ -810,47 +809,47 @@ function love.draw()
     -- draw arrows
     love.graphics.setColor(255, 255, 255, 255 * (arrowFadeCount / arrowFadeDuration))
     if lastPressedArrow ~= nil and arrowFadeCount > 0 then
-      love.graphics.draw(arrowImages[lastPressedArrow], 120, 34)
+      love.graphics.draw(arrowImages[lastPressedArrow], 149, 34)
 
-      love.graphics.draw(nextArrowImage, 60, 10) -- NOTE: second to next
-      love.graphics.draw(nextArrowImage, 105, 10) -- NOTE: next
+      love.graphics.draw(nextArrowImage, 89, 10) -- NOTE: second to next
+      love.graphics.draw(nextArrowImage, 134, 10) -- NOTE: next
     end
 
     love.graphics.setColor(255, 255, 255, 255)
 
     -- draw second to next block
     for i,nextBlock in ipairs(secondToNextConstellation) do
-      love.graphics.draw(blockImages[nextBlock.color], 38 + nextBlock.x * 8, 11 + nextBlock.y * 8)
+      love.graphics.draw(blockImages[nextBlock.color], 64 + nextBlock.x * 8, 11 + nextBlock.y * 8)
     end
 
     -- draw next block
     for i,nextBlock in ipairs(nextConstellation) do
-      love.graphics.draw(blockImages[nextBlock.color], 83 + nextBlock.x * 8, 11 + nextBlock.y * 8)
+      love.graphics.draw(blockImages[nextBlock.color], 112 + nextBlock.x * 8, 11 + nextBlock.y * 8)
     end
 
     -- draw falling block
     for i,fallingBlock in ipairs(fallingConstellation) do
-      love.graphics.draw(blockImages[fallingBlock.color], 128 + fallingBlock.x * 8, 11 + fallingBlock.y * 8)
+      love.graphics.draw(blockImages[fallingBlock.color], 157 + fallingBlock.x * 8, 11 + fallingBlock.y * 8)
     end  
 
     -- draw blocks in play area
     for i,block in ipairs(blocks) do
-      love.graphics.draw(blockImages[block.color], 120 + block.x * 8, 45 + block.y * 8)
+      love.graphics.draw(blockImages[block.color], 149 + block.x * 8, 45 + block.y * 8)
     end
 
     -- draw labels
     love.graphics.setColor(vars.TEXT_COLOR_LIGHT)
-    love.graphics.print('SCORE', 32, 37)
-    love.graphics.print('SPEED BONUS', 32, 59)
+    love.graphics.print('SCORE', 61, 37)
+    love.graphics.print('SPEED BONUS', 61, 59)
 
     -- draw total score
     love.graphics.setColor(vars.TEXT_COLOR_DARK)
-    love.graphics.printf(totalPoints, 31, 46, 74, 'right')
+    love.graphics.printf(totalPoints, 60, 46, 74, 'right')
 
     -- draw speed bonus
     do
       local w = 77 * (constellationPoints / startingPointsForConstellation)
-      local x = 30 + (77 - w)
+      local x = 59 + (77 - w)
 
       love.graphics.setColor(255, 255, 255, 255)
       love.graphics.draw(speedBonusFillImage, x, 67, 0, w, 11)
