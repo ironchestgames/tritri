@@ -225,9 +225,19 @@ end
 local function resetGame()
   blocks = {}
 
-  secondToNextConstellation = newBlockConstellation()
-  nextConstellation = newBlockConstellation()
-  fallingConstellation = newBlockConstellation() -- TODO: make this not the same as next
+  -- make sure no constalletion is followed by an identical one
+  local secondToNextConstellationConstant, nextConstellationConstant, fallingConstellationConstant
+  secondToNextConstellation, secondToNextConstellationConstant = newBlockConstellation()
+
+  nextConstellation, nextConstellationConstant = newBlockConstellation()
+  while nextConstellationConstant == secondToNextConstellationConstant do
+    nextConstellation, nextConstellationConstant = newBlockConstellation()
+  end
+
+  fallingConstellation, fallingConstellationConstant = newBlockConstellation()
+  while fallingConstellationConstant == nextConstellationConstant do
+    fallingConstellation, fallingConstellationConstant = newBlockConstellation()
+  end
 
   accPoints = 0
   averagePoints = 0
