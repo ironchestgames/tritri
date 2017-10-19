@@ -74,8 +74,8 @@ local backgroundAnimations = {}
 
 local musicSources = {}
 local musicSourcesChanges = {} -- NOTE: contains 0, 1 or -1
-local musicChangeFactor = 0.02
-local musicChangeTime = 3
+local musicChangeFactor = 0.018
+local musicChangeTime = 5
 local musicChangeCounter = 0
 
 local rowSounds = {}
