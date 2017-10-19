@@ -274,29 +274,32 @@ function love.load()
   youMadeHighscoreSound = love.audio.newSource('assetsources/youmadehighscore.wav', 'static')
   gameOverSound = love.audio.newSource('assetsources/gameover.wav', 'static')
 
-  function swap(array, index1, index2)
-    array[index1], array[index2] = array[index2], array[index1]
-  end
-
-  function shuffle(array)
-    local counter = #array
-    while counter > 1 do
-      local index = math.random(counter)
-      swap(array, index, counter)
-      counter = counter - 1
+  -- initiate music randomness
+  do
+    function swap(array, index1, index2)
+      array[index1], array[index2] = array[index2], array[index1]
     end
-    return array
-  end
 
-  local randomMusicVolumes = shuffle({1, 1, 0, 0, 0, 0, 0})
-  musicSourcesChanges = shuffle({-1, 1, 1, 0, 0, 0, 0})
+    function shuffle(array)
+      local counter = #array
+      while counter > 1 do
+        local index = math.random(counter)
+        swap(array, index, counter)
+        counter = counter - 1
+      end
+      return array
+    end
 
-  -- play all music
-  for i, source in ipairs(musicSources) do
-    source:rewind()
-    source:setLooping(true)
-    source:play()
-    source:setVolume(randomMusicVolumes[i])
+    local randomMusicVolumes = shuffle({1, 1, 0, 0, 0, 0, 0})
+    musicSourcesChanges = shuffle({-1, 1, 1, 0, 0, 0, 0})
+
+    -- play all music
+    for i, source in ipairs(musicSources) do
+      source:rewind()
+      source:setLooping(true)
+      source:play()
+      source:setVolume(randomMusicVolumes[i])
+    end
   end
 
   -- load font
@@ -339,7 +342,7 @@ function love.load()
 
   local particleImage = love.graphics.newImage('art/whitepixel.png')
   fallingConstellationParticleSystem = love.graphics.newParticleSystem(particleImage, 32)
-  fallingConstellationParticleSystem:setParticleLifetime(0.2, 0.4)
+  fallingConstellationParticleSystem:setParticleLifetime(0.2, 0.5)
   fallingConstellationParticleSystem:setEmissionRate(100)
   fallingConstellationParticleSystem:setSizeVariation(1)
   fallingConstellationParticleSystem:setSpeed(-350, 350)
