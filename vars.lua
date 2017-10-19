@@ -16,6 +16,8 @@ vars.OPTIONS_FILE_NAME = 'options.conf'
 vars.DEFAULT_OPTIONS = {
   _fileName = vars.OPTIONS_FILE_NAME,
   showBackgroundEffect = false,
+  playMusic = true,
+  playSoundEffects = true,
 }
 
 -- highscore file

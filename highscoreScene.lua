@@ -24,7 +24,10 @@ function love.load()
   music = love.audio.newSource('assetsources/music_highscore.wav')
   music:rewind()
   music:setLooping(true)
-  music:play()
+
+  if _G.options.playMusic == true then
+    music:play()
+  end
 
   -- load images
   bgImage = love.graphics.newImage('art/highscore_layout.png')

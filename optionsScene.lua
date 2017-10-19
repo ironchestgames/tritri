@@ -12,8 +12,8 @@ local font
 
 local backgroundAnimations = {}
 
-local selectionIndex = 2 -- NOTE: start at 'start game'
-local selectionMaxIndex = 3
+local selectionIndex = 4 -- NOTE: start at 'start game'
+local selectionMaxIndex = 5
 
 function love.load()
 
@@ -56,14 +56,23 @@ function love.keyreleased(key)
   if key == 'space' or key == 'return' or key == 'z' or key == 'left' or key == 'right' then
 
     if selectionIndex == 0 then
-      _G.options.showBackgroundEffect = not _G.options.showBackgroundEffect
+      _G.options.playMusic = not _G.options.playMusic
+      if _G.options.playMusic == true then
+        _G.menuMusic:setVolume(1)
+      else
+        _G.menuMusic:setVolume(0)
+      end
     elseif selectionIndex == 1 then
+      _G.options.playSoundEffects = not _G.options.playSoundEffects
+    elseif selectionIndex == 2 then
+      _G.options.showBackgroundEffect = not _G.options.showBackgroundEffect
+    elseif selectionIndex == 3 then
       local optionFileSaveSuccess = jupiter.save(_G.options)
       stateswitcher.switch('highscoreScene')
-    elseif selectionIndex == 2 then
+    elseif selectionIndex == 4 then
       local optionFileSaveSuccess = jupiter.save(_G.options)
       stateswitcher.switch('gameScene')
-    elseif selectionIndex == 3 then
+    elseif selectionIndex == 5 then
       love.event.quit()
     end
 
@@ -112,7 +121,7 @@ function love.draw()
   do
     local optionTextX = 26
     local optionTextY = 55
-    local optionTextHeight = 35
+    local optionTextHeight = 30
     local optionValueX = 195
 
     love.graphics.draw(
@@ -122,11 +131,45 @@ function love.draw()
 
     love.graphics.setColor(vars.TEXT_COLOR_DARK)
 
+    -- music option
+    love.graphics.print(
+        'MUSIC',
+        optionTextX,
+        optionTextY + optionTextHeight * 0,
+        0, 1, 1)
+
+    local value = 'OFF'
+    if _G.options.playMusic == true then
+      value = 'ON'
+    end
+    love.graphics.print(
+        value,
+        optionValueX,
+        optionTextY + optionTextHeight * 0,
+        0, 1, 1)
+
+    -- sound effects option
+    love.graphics.print(
+        'SOUNDS',
+        optionTextX,
+        optionTextY + optionTextHeight * 1,
+        0, 1, 1)
+
+    local value = 'OFF'
+    if _G.options.playSoundEffects == true then
+      value = 'ON'
+    end
+    love.graphics.print(
+        value,
+        optionValueX,
+        optionTextY + optionTextHeight * 1,
+        0, 1, 1)
+
     -- background effects option
     love.graphics.print(
         'TRIPPY BACKGROUND',
         optionTextX,
-        optionTextY + optionTextHeight * 0,
+        optionTextY + optionTextHeight * 2,
         0, 1, 1)
 
     local value = 'OFF'
@@ -136,28 +179,28 @@ function love.draw()
     love.graphics.print(
         value,
         optionValueX,
-        optionTextY + optionTextHeight * 0,
+        optionTextY + optionTextHeight * 2,
         0, 1, 1)
 
     -- highscore
     love.graphics.print(
         'HIGHSCORE',
         optionTextX + 67,
-        optionTextY + optionTextHeight * 1,
+        optionTextY + optionTextHeight * 3,
         0, 1, 1)
 
     -- start game
     love.graphics.print(
         'START GAME',
         optionTextX + 64,
-        optionTextY + optionTextHeight * 2,
+        optionTextY + optionTextHeight * 4,
         0, 1, 1)
 
     -- exit game
     love.graphics.print(
         'EXIT GAME',
         optionTextX + 67,
-        optionTextY + optionTextHeight * 3,
+        optionTextY + optionTextHeight * 5,
         0, 1, 1)
   end
 

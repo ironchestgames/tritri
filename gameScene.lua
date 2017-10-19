@@ -300,7 +300,9 @@ function love.load()
     for i, source in ipairs(musicSources) do
       source:rewind()
       source:setLooping(true)
-      source:play()
+      if _G.options.playMusic == true then
+        source:play()
+      end
       source:setVolume(randomMusicVolumes[i])
     end
   end
@@ -514,7 +516,7 @@ function love.keypressed(_key)
   end
 
   -- play sound
-  do
+  if _G.options.playSoundEffects == true then
     local sound
     if playRowSound == true then
       sound = rowSounds[love.math.random(1, 4)]
@@ -591,7 +593,7 @@ function love.keypressed(_key)
   lastConstellationConstant = nextConstellationConstant
 
   -- play game over sound
-  if isGameOver == true then
+  if isGameOver == true and _G.options.playSoundEffects == true then
     if isHighscore == true then
       youMadeHighscoreSound:rewind()
       youMadeHighscoreSound:play()
@@ -687,21 +689,6 @@ function love.update(dt)
         end
       end
     end
-    print(musicSourcesChanges[1],
-      musicSourcesChanges[2],
-      musicSourcesChanges[3],
-      musicSourcesChanges[4],
-      musicSourcesChanges[5],
-      musicSourcesChanges[6],
-      musicSourcesChanges[7])
-
-    -- print(musicSources[1]:getVolume(),
-    --   musicSources[2]:getVolume(),
-    --   musicSources[3]:getVolume(),
-    --   musicSources[4]:getVolume(),
-    --   musicSources[5]:getVolume(),
-    --   musicSources[6]:getVolume(),
-    --   musicSources[7]:getVolume())
   end
 
   -- update music volumes
