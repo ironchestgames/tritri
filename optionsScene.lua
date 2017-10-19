@@ -9,6 +9,7 @@ local bgAnimationImage
 local selectionImage
 local canvas
 local font
+local selectionAnimation
 
 local backgroundAnimations = {}
 
@@ -21,6 +22,12 @@ function love.load()
   bgImage = love.graphics.newImage('art/options_bg.png')
   selectionImage = love.graphics.newImage('art/options_selection.png')
   bgAnimationImage = love.graphics.newImage('art/splash_bg_blockanim.png')
+
+  -- create animations
+  do
+    local g = anim8.newGrid(197, 19, selectionImage:getWidth(), selectionImage:getHeight())
+    selectionAnimation = anim8.newAnimation(g(1, '1-11'), 0.1)
+  end
 
   -- load font
   font = love.graphics.newImageFont('art/font.png', vars.GLYPHS)
@@ -93,7 +100,7 @@ function love.keypressed()
 end
 
 function love.update(dt)
-  
+  selectionAnimation:update(dt)
 end
 
 function love.draw()
@@ -121,12 +128,12 @@ function love.draw()
   do
     local optionTextX = 26
     local optionTextY = 55
-    local optionTextHeight = 30
+    local optionTextHeight = 28
     local optionValueX = 195
 
-    love.graphics.draw(
+    selectionAnimation:draw(
         selectionImage,
-        optionTextX - 5,
+        optionTextX - 4,
         (optionTextY - 5) + selectionIndex * optionTextHeight)
 
     love.graphics.setColor(vars.TEXT_COLOR_DARK)
@@ -192,9 +199,9 @@ function love.draw()
     -- start game
     love.graphics.print(
         'START GAME',
-        optionTextX + 64,
-        optionTextY + optionTextHeight * 4,
-        0, 1, 1)
+        optionTextX + 43,
+        optionTextY + optionTextHeight * 4 - 4,
+        0, 2, 2)
 
     -- exit game
     love.graphics.print(
