@@ -180,5 +180,5 @@ function love.draw()
   love.graphics.setColor(255, 255, 255, 255)
   love.graphics.setCanvas()
 
-  love.graphics.draw(canvas, _G.CANVAS_X, 0, 0, _G.GRAPHICSSCALE, _G.GRAPHICSSCALE)
+  love.graphics.draw(canvas, _G.CANVAS_X, _G.CANVAS_Y, 0, _G.GRAPHICSSCALE, _G.GRAPHICSSCALE)
 end

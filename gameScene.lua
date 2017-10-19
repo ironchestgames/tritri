@@ -877,7 +877,7 @@ function love.draw()
 
   -- draw game canvas
   love.graphics.setColor(255, 255, 255, 255)
-  love.graphics.draw(gameCanvas, _G.CANVAS_X, 0, 0, _G.GRAPHICSSCALE, _G.GRAPHICSSCALE)
+  love.graphics.draw(gameCanvas, _G.CANVAS_X, _G.CANVAS_Y, 0, _G.GRAPHICSSCALE, _G.GRAPHICSSCALE)
 
 end
 
