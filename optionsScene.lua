@@ -13,8 +13,8 @@ local selectionAnimation
 
 local backgroundAnimations = {}
 
-local selectionIndex = 4 -- NOTE: start at 'start game'
-local selectionMaxIndex = 5
+local selectionIndex = 5 -- NOTE: start at 'start game'
+local selectionMaxIndex = 6
 
 function love.load()
 
@@ -75,11 +75,14 @@ function love.keyreleased(key)
       _G.options.showBackgroundEffect = not _G.options.showBackgroundEffect
     elseif selectionIndex == 3 then
       local optionFileSaveSuccess = jupiter.save(_G.options)
-      stateswitcher.switch('highscoreScene')
+      stateswitcher.switch('instructionsScene')
     elseif selectionIndex == 4 then
       local optionFileSaveSuccess = jupiter.save(_G.options)
-      stateswitcher.switch('gameScene')
+      stateswitcher.switch('highscoreScene')
     elseif selectionIndex == 5 then
+      local optionFileSaveSuccess = jupiter.save(_G.options)
+      stateswitcher.switch('gameScene')
+    elseif selectionIndex == 6 then
       love.event.quit()
     end
 
@@ -127,8 +130,8 @@ function love.draw()
   -- options
   do
     local optionTextX = 26
-    local optionTextY = 55
-    local optionTextHeight = 28
+    local optionTextY = 51
+    local optionTextHeight = 24
     local optionValueX = 195
 
     selectionAnimation:draw(
@@ -189,25 +192,32 @@ function love.draw()
         optionTextY + optionTextHeight * 2,
         0, 1, 1)
 
+    -- instructions
+    love.graphics.print(
+        'INSTRUCTIONS',
+        optionTextX + 58,
+        optionTextY + optionTextHeight * 3,
+        0, 1, 1)
+
     -- highscore
     love.graphics.print(
         'HIGHSCORE',
         optionTextX + 67,
-        optionTextY + optionTextHeight * 3,
+        optionTextY + optionTextHeight * 4,
         0, 1, 1)
 
     -- start game
     love.graphics.print(
         'START GAME',
         optionTextX + 43,
-        optionTextY + optionTextHeight * 4 - 4,
+        optionTextY + optionTextHeight * 5 - 4,
         0, 2, 2)
 
     -- exit game
     love.graphics.print(
         'EXIT GAME',
         optionTextX + 67,
-        optionTextY + optionTextHeight * 5,
+        optionTextY + optionTextHeight * 6,
         0, 1, 1)
   end
 
