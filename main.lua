@@ -15,8 +15,8 @@ do
   local bgImage = love.graphics.newImage('art/splash_bg.png')
 
   -- NOTE: assume screen width is larger than screen height
-  _G.GRAPHICSSCALE = SCREENHEIGHT / bgImage:getHeight()
-  _G.CANVAS_X = (SCREENWIDTH - bgImage:getWidth() * GRAPHICSSCALE) / 2
+  _G.GRAPHICSSCALE = math.floor(_G.SCREENHEIGHT / bgImage:getHeight())
+  _G.CANVAS_X = (_G.SCREENWIDTH - bgImage:getWidth() * _G.GRAPHICSSCALE) / 2
 
   love.window.setFullscreen(true)
 end
