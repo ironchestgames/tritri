@@ -223,9 +223,12 @@ function newBlockConstellation()
 end
 
 local function resetGame()
+
+  -- reset play area
   blocks = {}
 
-  -- make sure no constalletion is followed by an identical one
+  -- get new falling blocks
+  -- NOTE: make sure no constalletion is followed by an identical one
   local secondToNextConstellationConstant, nextConstellationConstant, fallingConstellationConstant
   secondToNextConstellation, secondToNextConstellationConstant = newBlockConstellation()
 
@@ -239,6 +242,9 @@ local function resetGame()
     fallingConstellation, fallingConstellationConstant = newBlockConstellation()
   end
 
+  lastConstellationConstant = secondToNextConstellationConstant
+
+  -- reset scoring
   accPoints = 0
   averagePoints = 0
   constellationPoints = startingPointsForConstellation
@@ -246,10 +252,12 @@ local function resetGame()
   rowScore = 0
   totalPoints = 0
 
+  -- reset flags
   isGameOver = false
   isHighscore = false
   gameOverBgFadeCount = gameOverBgFadeDuration
 
+  -- reset bg color
   love.graphics.setBackgroundColor(BG_COLOR)
 
 end
@@ -529,9 +537,9 @@ function love.keypressed(_key)
   if _G.options.playSoundEffects == true then
     local sound
     if playRowSound == true then
-      sound = rowSounds[love.math.random(1, 4)]
+      sound = rowSounds[love.math.random(1, 4)] -- TODO: instead of random, play next constellations sound
     else
-      sound = fallSounds[love.math.random(1, 4)]
+      sound = fallSounds[love.math.random(1, 4)] -- TODO: instead of random, play next constellations sound
     end
     sound:rewind()
     sound:play()
