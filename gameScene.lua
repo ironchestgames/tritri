@@ -31,13 +31,12 @@ local accPoints
 local constellationPoints
 local averagePoints
 local startingPointsForConstellation = 100
-local lastConstellationConstant = nil
 local blockScore
 local rowScore
 local totalPoints -- NOTE: accPoints * (rowScore + blockScore)
-local fallingConstellation
-local nextConstellation
-local secondToNextConstellation
+local fallingConstellation, fallingConstellationConstant
+local nextConstellation, nextConstellationConstant
+local secondToNextConstellation, secondToNextConstellationConstant
 local isHighscore = false
 local isGameOver = false
 
@@ -229,7 +228,6 @@ local function resetGame()
 
   -- get new falling blocks
   -- NOTE: make sure no constalletion is followed by an identical one
-  local secondToNextConstellationConstant, nextConstellationConstant, fallingConstellationConstant
   secondToNextConstellation, secondToNextConstellationConstant = newBlockConstellation()
 
   nextConstellation, nextConstellationConstant = newBlockConstellation()
@@ -241,8 +239,6 @@ local function resetGame()
   while fallingConstellationConstant == nextConstellationConstant do
     fallingConstellation, fallingConstellationConstant = newBlockConstellation()
   end
-
-  lastConstellationConstant = secondToNextConstellationConstant
 
   -- reset scoring
   accPoints = 0
@@ -282,15 +278,15 @@ function love.load()
   musicSources[6] = love.audio.newSource('assetsources/music_pad1.wav')
   musicSources[7] = love.audio.newSource('assetsources/music_drums1.wav')
 
-  rowSounds[1] = love.audio.newSource('assetsources/row001.wav', 'static')
-  rowSounds[2] = love.audio.newSource('assetsources/row002.wav', 'static')
-  rowSounds[3] = love.audio.newSource('assetsources/row003.wav', 'static')
-  rowSounds[4] = love.audio.newSource('assetsources/row004.wav', 'static')
+  rowSounds[CONSTELLATION_3_6] = love.audio.newSource('assetsources/row001.wav', 'static')
+  rowSounds[CONSTELLATION_9_12] = love.audio.newSource('assetsources/row002.wav', 'static')
+  rowSounds[CONSTELLATION_12_3] = love.audio.newSource('assetsources/row003.wav', 'static')
+  rowSounds[CONSTELLATION_6_9] = love.audio.newSource('assetsources/row004.wav', 'static')
 
-  fallSounds[1] = love.audio.newSource('assetsources/fall001.wav', 'static')
-  fallSounds[2] = love.audio.newSource('assetsources/fall002.wav', 'static')
-  fallSounds[3] = love.audio.newSource('assetsources/fall003.wav', 'static')
-  fallSounds[4] = love.audio.newSource('assetsources/fall004.wav', 'static')
+  fallSounds[CONSTELLATION_3_6] = love.audio.newSource('assetsources/fall001.wav', 'static')
+  fallSounds[CONSTELLATION_9_12] = love.audio.newSource('assetsources/fall002.wav', 'static')
+  fallSounds[CONSTELLATION_12_3] = love.audio.newSource('assetsources/fall003.wav', 'static')
+  fallSounds[CONSTELLATION_6_9] = love.audio.newSource('assetsources/fall004.wav', 'static')
 
   youMadeHighscoreSound = love.audio.newSource('assetsources/youmadehighscore.wav', 'static')
   gameOverSound = love.audio.newSource('assetsources/gameover.wav', 'static')
@@ -533,18 +529,6 @@ function love.keypressed(_key)
     end
   end
 
-  -- play sound
-  if _G.options.playSoundEffects == true then
-    local sound
-    if playRowSound == true then
-      sound = rowSounds[love.math.random(1, 4)] -- TODO: instead of random, play next constellations sound
-    else
-      sound = fallSounds[love.math.random(1, 4)] -- TODO: instead of random, play next constellations sound
-    end
-    sound:rewind()
-    sound:play()
-  end
-
   -- check for game over
   for i,block in ipairs(blocks) do
     if block.y < 0 then
@@ -599,25 +583,34 @@ function love.keypressed(_key)
   end
 
   -- move next train forward
-  fallingConstellation = nextConstellation
-  nextConstellation = secondToNextConstellation
+  fallingConstellation, fallingConstellationConstant = nextConstellation, nextConstellationConstant
+  nextConstellation, nextConstellationConstant = secondToNextConstellation, secondToNextConstellationConstant
 
   -- get next constellation
-  local nextConstellationConstant
-  secondToNextConstellation, nextConstellationConstant = newBlockConstellation()
-  while nextConstellationConstant == lastConstellationConstant do
-    secondToNextConstellation, nextConstellationConstant = newBlockConstellation()
+  secondToNextConstellation, secondToNextConstellationConstant = newBlockConstellation()
+  while secondToNextConstellationConstant == nextConstellationConstant do
+    secondToNextConstellation, secondToNextConstellationConstant = newBlockConstellation()
   end
-  lastConstellationConstant = nextConstellationConstant
 
-  -- play game over sound
-  if isGameOver == true and _G.options.playSoundEffects == true then
-    if isHighscore == true then
-      youMadeHighscoreSound:rewind()
-      youMadeHighscoreSound:play()
+  -- play sounds
+  if _G.options.playSoundEffects == true then
+    if isGameOver == true then
+      if isHighscore == true then
+        youMadeHighscoreSound:rewind()
+        youMadeHighscoreSound:play()
+      else
+        gameOverSound:rewind()
+        gameOverSound:play()
+      end
     else
-      gameOverSound:rewind()
-      gameOverSound:play()
+      local sound
+      if playRowSound == true then
+        sound = rowSounds[fallingConstellationConstant]
+      else
+        sound = fallSounds[fallingConstellationConstant]
+      end
+      sound:rewind()
+      sound:play()
     end
   end
 end
