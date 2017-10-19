@@ -72,6 +72,17 @@ local gameOverBgFadeDuration = 0.3
 local showBackgroundEffect = true
 local backgroundAnimations = {}
 
+local musicSources = {}
+local musicSourcesChanges = {} -- NOTE: contains 0, 1 or -1
+local musicChangeFactor = 0.02
+local musicChangeTime = 3
+local musicChangeCounter = 0
+
+local rowSounds = {}
+local fallSounds = {}
+local youMadeHighscoreSound
+local gameOverSound
+
 function fadeColor(
   time, prologue, attack, sustain, decay, epilogue,
   fade_in_r, fade_in_g, fade_in_b,
@@ -241,8 +252,57 @@ function love.load()
   -- hide mouse pointer
   love.mouse.setVisible(false)
 
+  -- load sounds and music
+  musicSources[1] = love.audio.newSource('assetsources/music_ack1.wav')
+  musicSources[2] = love.audio.newSource('assetsources/music_ack2.wav')
+  musicSources[3] = love.audio.newSource('assetsources/music_melodi1.wav')
+  musicSources[4] = love.audio.newSource('assetsources/music_melodi2.wav')
+  musicSources[5] = love.audio.newSource('assetsources/music_bas1.wav')
+  musicSources[6] = love.audio.newSource('assetsources/music_pad1.wav')
+  musicSources[7] = love.audio.newSource('assetsources/music_drums1.wav')
+
+  rowSounds[1] = love.audio.newSource('assetsources/row001.wav', 'static')
+  rowSounds[2] = love.audio.newSource('assetsources/row002.wav', 'static')
+  rowSounds[3] = love.audio.newSource('assetsources/row003.wav', 'static')
+  rowSounds[4] = love.audio.newSource('assetsources/row004.wav', 'static')
+
+  fallSounds[1] = love.audio.newSource('assetsources/fall001.wav', 'static')
+  fallSounds[2] = love.audio.newSource('assetsources/fall002.wav', 'static')
+  fallSounds[3] = love.audio.newSource('assetsources/fall003.wav', 'static')
+  fallSounds[4] = love.audio.newSource('assetsources/fall004.wav', 'static')
+
+  youMadeHighscoreSound = love.audio.newSource('assetsources/youmadehighscore.wav', 'static')
+  gameOverSound = love.audio.newSource('assetsources/gameover.wav', 'static')
+
+  function swap(array, index1, index2)
+    array[index1], array[index2] = array[index2], array[index1]
+  end
+
+  function shuffle(array)
+    local counter = #array
+    while counter > 1 do
+      local index = math.random(counter)
+      swap(array, index, counter)
+      counter = counter - 1
+    end
+    return array
+  end
+
+  local randomMusicVolumes = shuffle({1, 1, 0, 0, 0, 0, 0})
+  musicSourcesChanges = shuffle({-1, 1, 1, 0, 0, 0, 0})
+
+  -- play all music
+  for i, source in ipairs(musicSources) do
+    source:rewind()
+    source:setLooping(true)
+    source:play()
+    source:setVolume(randomMusicVolumes[i])
+  end
+
+  -- load font
   font = love.graphics.newImageFont('art/font.png', vars.GLYPHS)
 
+  -- load images
   backgroundImage = love.graphics.newImage('art/bg.png')
   bgAnimationImage = love.graphics.newImage('art/splash_bg_blockanim.png')
 
@@ -336,6 +396,12 @@ function love.keypressed(_key)
   local key = _key
 
   if key == 'escape' or key == 'q' then
+
+    -- stop all music
+    for i, source in ipairs(musicSources) do
+      source:stop()
+    end
+
     stateswitcher.switch('optionsScene')
     return
   end
@@ -402,6 +468,7 @@ function love.keypressed(_key)
   end
 
   -- remove full block lines
+  local playRowSound = false
   for y = 0, PLAYAREA_HEIGHT_IN_BLOCKS - 1 do
     local blockRowIndeces = {}
     for i, block in ipairs(blocks) do
@@ -412,6 +479,8 @@ function love.keypressed(_key)
     if table.getn(blockRowIndeces) == PLAYAREA_WIDTH_IN_BLOCKS then
 
       rowScore = rowScore + 1
+
+      playRowSound = true
 
       table.sort(blockRowIndeces)
       for i = table.getn(blockRowIndeces), 1, -1 do
@@ -432,6 +501,18 @@ function love.keypressed(_key)
         end
       end
     end
+  end
+
+  -- play sound
+  do
+    local sound
+    if playRowSound == true then
+      sound = rowSounds[love.math.random(1, 4)]
+    else
+      sound = fallSounds[love.math.random(1, 4)]
+    end
+    sound:rewind()
+    sound:play()
   end
 
   -- check for game over
@@ -498,6 +579,17 @@ function love.keypressed(_key)
     secondToNextConstellation, nextConstellationConstant = newBlockConstellation()
   end
   lastConstellationConstant = nextConstellationConstant
+
+  -- play game over sound
+  if isGameOver == true then
+    if isHighscore == true then
+      youMadeHighscoreSound:rewind()
+      youMadeHighscoreSound:play()
+    else
+      gameOverSound:rewind()
+      gameOverSound:play()
+    end
+  end
 end
 
 function love.keyreleased(key)
@@ -561,6 +653,64 @@ function love.update(dt)
   gameOverTextAnimation:update(dt)
   highscoreTextAnimation:update(dt)
 
+  -- update music changes
+  musicChangeCounter = musicChangeCounter + dt
+  if musicChangeCounter > musicChangeTime then
+    musicChangeCounter = 0
+
+    local changeCounter = 0
+    for i, source in ipairs(musicSources) do
+      if love.math.random(1, 2) == 1 then
+        if musicSourcesChanges[i] == 0 then
+          if source:getVolume() == 0 then
+            musicSourcesChanges[i] = 1
+          else
+            musicSourcesChanges[i] = -1
+          end
+        end
+      end
+
+      if musicSourcesChanges[i] ~= 0 then
+        changeCounter = changeCounter + 1
+        if changeCounter >= 3 then
+          break
+        end
+      end
+    end
+    print(musicSourcesChanges[1],
+      musicSourcesChanges[2],
+      musicSourcesChanges[3],
+      musicSourcesChanges[4],
+      musicSourcesChanges[5],
+      musicSourcesChanges[6],
+      musicSourcesChanges[7])
+
+    -- print(musicSources[1]:getVolume(),
+    --   musicSources[2]:getVolume(),
+    --   musicSources[3]:getVolume(),
+    --   musicSources[4]:getVolume(),
+    --   musicSources[5]:getVolume(),
+    --   musicSources[6]:getVolume(),
+    --   musicSources[7]:getVolume())
+  end
+
+  -- update music volumes
+  for i, source in ipairs(musicSources) do
+    local currentVolume = source:getVolume()
+    local volumeChange = musicSourcesChanges[i] * dt * musicChangeFactor
+    local newVolume = currentVolume + volumeChange
+
+    if newVolume < 0 then
+      newVolume = 0
+      musicSourcesChanges[i] = 0
+    elseif newVolume > 1 then
+      newVolume = 1
+      musicSourcesChanges[i] = 0
+    end
+
+    source:setVolume(newVolume)
+  end
+
 end
 
 function love.draw()
@@ -622,6 +772,7 @@ function love.draw()
 
     if isHighscore == true then
       highscoreTextAnimation:draw(highscoreTextImage, 21, 159)
+
     else
       gameOverTextAnimation:draw(gameOverTextImage, 71, 107)
     end
