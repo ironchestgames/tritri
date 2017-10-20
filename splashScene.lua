@@ -77,12 +77,12 @@ local logoBlockPositions = {
 function love.load()
 
   -- load images
-  bgImage = love.graphics.newImage('art/splash_bg.png')
-  blockAnimationImage = love.graphics.newImage('art/blockanim.png')
-  bgAnimationImage = love.graphics.newImage('art/splash_bg_blockanim.png')
+  bgImage = love.graphics.newImage('images/splash_bg.png')
+  blockAnimationImage = love.graphics.newImage('images/blockanim.png')
+  bgAnimationImage = love.graphics.newImage('images/splash_bg_blockanim.png')
 
   -- load font
-  font = love.graphics.newImageFont('art/font.png', vars.GLYPHS)
+  font = love.graphics.newImageFont('images/font.png', vars.GLYPHS)
   love.graphics.setFont(font)
 
   canvas = love.graphics.newCanvas()

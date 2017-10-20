@@ -270,26 +270,26 @@ function love.load()
   love.mouse.setVisible(false)
 
   -- load sounds and music
-  musicSources[1] = love.audio.newSource('assetsources/music_ack1.wav')
-  musicSources[2] = love.audio.newSource('assetsources/music_ack2.wav')
-  musicSources[3] = love.audio.newSource('assetsources/music_melodi1.wav')
-  musicSources[4] = love.audio.newSource('assetsources/music_melodi2.wav')
-  musicSources[5] = love.audio.newSource('assetsources/music_bas1.wav')
-  musicSources[6] = love.audio.newSource('assetsources/music_pad1.wav')
-  musicSources[7] = love.audio.newSource('assetsources/music_drums1.wav')
+  musicSources[1] = love.audio.newSource('sounds/music_ack1.wav')
+  musicSources[2] = love.audio.newSource('sounds/music_ack2.wav')
+  musicSources[3] = love.audio.newSource('sounds/music_melodi1.wav')
+  musicSources[4] = love.audio.newSource('sounds/music_melodi2.wav')
+  musicSources[5] = love.audio.newSource('sounds/music_bas1.wav')
+  musicSources[6] = love.audio.newSource('sounds/music_pad1.wav')
+  musicSources[7] = love.audio.newSource('sounds/music_drums1.wav')
 
-  rowSounds[CONSTELLATION_3_6] = love.audio.newSource('assetsources/row001.wav', 'static')
-  rowSounds[CONSTELLATION_9_12] = love.audio.newSource('assetsources/row002.wav', 'static')
-  rowSounds[CONSTELLATION_12_3] = love.audio.newSource('assetsources/row003.wav', 'static')
-  rowSounds[CONSTELLATION_6_9] = love.audio.newSource('assetsources/row004.wav', 'static')
+  rowSounds[CONSTELLATION_3_6] = love.audio.newSource('sounds/row001.wav', 'static')
+  rowSounds[CONSTELLATION_9_12] = love.audio.newSource('sounds/row002.wav', 'static')
+  rowSounds[CONSTELLATION_12_3] = love.audio.newSource('sounds/row003.wav', 'static')
+  rowSounds[CONSTELLATION_6_9] = love.audio.newSource('sounds/row004.wav', 'static')
 
-  fallSounds[CONSTELLATION_3_6] = love.audio.newSource('assetsources/fall001.wav', 'static')
-  fallSounds[CONSTELLATION_9_12] = love.audio.newSource('assetsources/fall002.wav', 'static')
-  fallSounds[CONSTELLATION_12_3] = love.audio.newSource('assetsources/fall003.wav', 'static')
-  fallSounds[CONSTELLATION_6_9] = love.audio.newSource('assetsources/fall004.wav', 'static')
+  fallSounds[CONSTELLATION_3_6] = love.audio.newSource('sounds/fall001.wav', 'static')
+  fallSounds[CONSTELLATION_9_12] = love.audio.newSource('sounds/fall002.wav', 'static')
+  fallSounds[CONSTELLATION_12_3] = love.audio.newSource('sounds/fall003.wav', 'static')
+  fallSounds[CONSTELLATION_6_9] = love.audio.newSource('sounds/fall004.wav', 'static')
 
-  youMadeHighscoreSound = love.audio.newSource('assetsources/youmadehighscore.wav', 'static')
-  gameOverSound = love.audio.newSource('assetsources/gameover.wav', 'static')
+  youMadeHighscoreSound = love.audio.newSource('sounds/youmadehighscore.wav', 'static')
+  gameOverSound = love.audio.newSource('sounds/gameover.wav', 'static')
 
   -- tweak sound volumes
   for k, sound in pairs(fallSounds) do
@@ -334,44 +334,44 @@ function love.load()
   end
 
   -- load font
-  font = love.graphics.newImageFont('art/font.png', vars.GLYPHS)
+  font = love.graphics.newImageFont('images/font.png', vars.GLYPHS)
 
   -- load images
-  backgroundImage = love.graphics.newImage('art/bg.png')
-  bgAnimationImage = love.graphics.newImage('art/splash_bg_blockanim.png')
+  backgroundImage = love.graphics.newImage('images/bg.png')
+  bgAnimationImage = love.graphics.newImage('images/splash_bg_blockanim.png')
 
   if showBackgroundEffect == true then
-    playAreaImage = love.graphics.newImage('art/playarea_clean_trippy.png')
+    playAreaImage = love.graphics.newImage('images/playarea_clean_trippy.png')
   else
-    playAreaImage = love.graphics.newImage('art/playarea_clean.png')
+    playAreaImage = love.graphics.newImage('images/playarea_clean.png')
   end
 
-  speedBonusFillImage = love.graphics.newImage('art/lightbluepixel.png')
+  speedBonusFillImage = love.graphics.newImage('images/lightbluepixel.png')
 
-  blockImages[COLOR_1] = love.graphics.newImage('art/block1.png')
-  blockImages[COLOR_2] = love.graphics.newImage('art/block2.png')
-  blockImages[COLOR_3] = love.graphics.newImage('art/block3.png')
-  blockImages[COLOR_4] = love.graphics.newImage('art/block4.png')
+  blockImages[COLOR_1] = love.graphics.newImage('images/block1.png')
+  blockImages[COLOR_2] = love.graphics.newImage('images/block2.png')
+  blockImages[COLOR_3] = love.graphics.newImage('images/block3.png')
+  blockImages[COLOR_4] = love.graphics.newImage('images/block4.png')
 
-  arrowImages['left'] = love.graphics.newImage('art/arrow_left.png')
-  arrowImages['down'] = love.graphics.newImage('art/arrow_middle.png')
-  arrowImages['right'] = love.graphics.newImage('art/arrow_right.png')
+  arrowImages['left'] = love.graphics.newImage('images/arrow_left.png')
+  arrowImages['down'] = love.graphics.newImage('images/arrow_middle.png')
+  arrowImages['right'] = love.graphics.newImage('images/arrow_right.png')
 
-  nextArrowImage = love.graphics.newImage('art/nextarrow.png')
+  nextArrowImage = love.graphics.newImage('images/nextarrow.png')
 
-  gameOverBlockImage = love.graphics.newImage('art/gameoverblockanim.png')
+  gameOverBlockImage = love.graphics.newImage('images/gameoverblockanim.png')
   local g = anim8.newGrid(8, 8, gameOverBlockImage:getWidth(), gameOverBlockImage:getHeight())
   gameOverBlockAnimation = anim8.newAnimation(g('1-3', 1), 0.05)
 
-  highscoreTextImage = love.graphics.newImage('art/highscore_text.png')
+  highscoreTextImage = love.graphics.newImage('images/highscore_text.png')
   local g = anim8.newGrid(186, 26, highscoreTextImage:getWidth(), highscoreTextImage:getHeight())
   highscoreTextAnimation = anim8.newAnimation(g('1-3', 1), 0.05)
 
-  gameOverTextImage = love.graphics.newImage('art/gameovertext.png')
+  gameOverTextImage = love.graphics.newImage('images/gameovertext.png')
   local g = anim8.newGrid(102, 60, gameOverTextImage:getWidth(), gameOverTextImage:getHeight())
   gameOverTextAnimation = anim8.newAnimation(g('1-3', 1), 0.05)
 
-  local particleImage = love.graphics.newImage('art/whitepixel.png')
+  local particleImage = love.graphics.newImage('images/whitepixel.png')
   fallingConstellationParticleSystem = love.graphics.newParticleSystem(particleImage, 32)
   fallingConstellationParticleSystem:setParticleLifetime(0.2, 0.5)
   fallingConstellationParticleSystem:setEmissionRate(100)
@@ -381,7 +381,7 @@ function love.load()
   fallingConstellationParticleSystem:setLinearDamping(10)
   fallingConstellationParticleSystem:setAreaSpread('normal', 7, 0)
 
-  local bgParticleImage = love.graphics.newImage('art/bg_whitepixel.png')
+  local bgParticleImage = love.graphics.newImage('images/bg_whitepixel.png')
   bgParticleSystem = love.graphics.newParticleSystem(bgParticleImage, 200)
   bgParticleSystem:setParticleLifetime(10, 20)
   bgParticleSystem:setEmissionRate(10)

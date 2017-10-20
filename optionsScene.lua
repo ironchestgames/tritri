@@ -19,9 +19,9 @@ local selectionMaxIndex = 6
 function love.load()
 
   -- load images
-  bgImage = love.graphics.newImage('art/options_bg.png')
-  selectionImage = love.graphics.newImage('art/options_selection.png')
-  bgAnimationImage = love.graphics.newImage('art/splash_bg_blockanim.png')
+  bgImage = love.graphics.newImage('images/options_bg.png')
+  selectionImage = love.graphics.newImage('images/options_selection.png')
+  bgAnimationImage = love.graphics.newImage('images/splash_bg_blockanim.png')
 
   -- create animations
   do
@@ -30,7 +30,7 @@ function love.load()
   end
 
   -- load font
-  font = love.graphics.newImageFont('art/font.png', vars.GLYPHS)
+  font = love.graphics.newImageFont('images/font.png', vars.GLYPHS)
   love.graphics.setFont(font)
 
   canvas = love.graphics.newCanvas()

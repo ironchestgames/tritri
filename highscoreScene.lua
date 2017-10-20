@@ -21,7 +21,7 @@ function love.load()
   _G.menuMusic:stop()
 
   -- load music
-  music = love.audio.newSource('assetsources/music_highscore.wav')
+  music = love.audio.newSource('sounds/music_highscore.wav')
   music:rewind()
   music:setLooping(true)
 
@@ -30,11 +30,11 @@ function love.load()
   end
 
   -- load images
-  bgImage = love.graphics.newImage('art/highscore_layout.png')
-  blockAnimationImage = love.graphics.newImage('art/highscore_blockanim.png')
+  bgImage = love.graphics.newImage('images/highscore_layout.png')
+  blockAnimationImage = love.graphics.newImage('images/highscore_blockanim.png')
 
   -- load font
-  font = love.graphics.newImageFont('art/font.png', vars.GLYPHS)
+  font = love.graphics.newImageFont('images/font.png', vars.GLYPHS)
   love.graphics.setFont(font)
 
   canvas = love.graphics.newCanvas()

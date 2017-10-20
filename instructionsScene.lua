@@ -13,8 +13,8 @@ local backgroundAnimations = {}
 function love.load()
 
   -- load images
-  bgImage = love.graphics.newImage('art/instructions_bg.png')
-  bgAnimationImage = love.graphics.newImage('art/splash_bg_blockanim.png')
+  bgImage = love.graphics.newImage('images/instructions_bg.png')
+  bgAnimationImage = love.graphics.newImage('images/splash_bg_blockanim.png')
 
   canvas = love.graphics.newCanvas()
 
