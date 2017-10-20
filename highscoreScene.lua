@@ -21,7 +21,7 @@ function love.load()
   _G.menuMusic:stop()
 
   -- load music
-  music = love.audio.newSource('sounds/music_highscore.wav')
+  music = love.audio.newSource('sounds/music_highscore.ogg')
   music:rewind()
   music:setLooping(true)
 

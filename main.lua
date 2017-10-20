@@ -62,7 +62,7 @@ do
   })
 end
 
-_G.menuMusic = love.audio.newSource('sounds/music_menu.wav')
+_G.menuMusic = love.audio.newSource('sounds/music_menu.ogg')
 _G.menuMusic:setLooping(true)
 _G.menuMusic:play()
 

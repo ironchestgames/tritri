@@ -270,13 +270,13 @@ function love.load()
   love.mouse.setVisible(false)
 
   -- load sounds and music
-  musicSources[1] = love.audio.newSource('sounds/music_ack1.wav')
-  musicSources[2] = love.audio.newSource('sounds/music_ack2.wav')
-  musicSources[3] = love.audio.newSource('sounds/music_melodi1.wav')
-  musicSources[4] = love.audio.newSource('sounds/music_melodi2.wav')
-  musicSources[5] = love.audio.newSource('sounds/music_bas1.wav')
-  musicSources[6] = love.audio.newSource('sounds/music_pad1.wav')
-  musicSources[7] = love.audio.newSource('sounds/music_drums1.wav')
+  musicSources[1] = love.audio.newSource('sounds/music_ack1.ogg')
+  musicSources[2] = love.audio.newSource('sounds/music_ack2.ogg')
+  musicSources[3] = love.audio.newSource('sounds/music_melodi1.ogg')
+  musicSources[4] = love.audio.newSource('sounds/music_melodi2.ogg')
+  musicSources[5] = love.audio.newSource('sounds/music_bas1.ogg')
+  musicSources[6] = love.audio.newSource('sounds/music_pad1.ogg')
+  musicSources[7] = love.audio.newSource('sounds/music_drums1.ogg')
 
   rowSounds[CONSTELLATION_3_6] = love.audio.newSource('sounds/row001.wav', 'static')
   rowSounds[CONSTELLATION_9_12] = love.audio.newSource('sounds/row002.wav', 'static')
@@ -288,8 +288,8 @@ function love.load()
   fallSounds[CONSTELLATION_12_3] = love.audio.newSource('sounds/fall003.wav', 'static')
   fallSounds[CONSTELLATION_6_9] = love.audio.newSource('sounds/fall004.wav', 'static')
 
-  youMadeHighscoreSound = love.audio.newSource('sounds/youmadehighscore.wav', 'static')
-  gameOverSound = love.audio.newSource('sounds/gameover.wav', 'static')
+  youMadeHighscoreSound = love.audio.newSource('sounds/youmadehighscore.ogg', 'static')
+  gameOverSound = love.audio.newSource('sounds/gameover.ogg', 'static')
 
   -- tweak sound volumes
   for k, sound in pairs(fallSounds) do
